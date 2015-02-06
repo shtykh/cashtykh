@@ -1,5 +1,5 @@
 import cashtykh.ICache;
-import cashtykh.OneLevelCache;
+import cashtykh.TwoLevelCache;
 import ui.CacheDialogue;
 
 /**
@@ -7,7 +7,7 @@ import ui.CacheDialogue;
  */
 public class Main {
 	public static void main (String[] args) {
-		ICache cache = new OneLevelCache<String>();
+		ICache cache = new TwoLevelCache<String>(5, 10);
 		CacheDialogue.show(cache);
 		System.exit(0);
 	}

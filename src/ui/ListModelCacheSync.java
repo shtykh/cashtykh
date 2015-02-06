@@ -3,26 +3,37 @@ package ui;
 import cashtykh.ICache;
 
 import javax.swing.*;
+import java.util.Iterator;
 
 /**
  * Created by shtykh on 06/02/15.
  */
 public class ListModelCacheSync extends DefaultListModel {
 	private final ICache cache;
+	private boolean firstLevel;
 
-	public ListModelCacheSync(ICache cache) {
+	public ListModelCacheSync(ICache cache, boolean firstLevel) {
 		super();
 		this.cache = cache;
+		this.firstLevel = firstLevel;
 	}
 
 	public void push(Object obj, Object value) {
-		cache.put(obj, value);
-		super.add(0, obj);
+		cache.cache(obj, value);
+		sync();
 	}
 
-	public boolean removeElement(int index) {
+	public void removeElement(int index) {
 		Object obj = get(index);
-		cache.remove(obj);
-		return super.removeElement(obj);
+		cache.delete(obj);
+		sync();
+	}
+
+	public void sync() {
+		super.clear();
+		Iterator keyIterator = firstLevel ? cache.firstLevelIterator() : cache.secondLevelIterator();
+		while (keyIterator.hasNext()) {
+			super.addElement(keyIterator.next());
+		}
 	}
 }

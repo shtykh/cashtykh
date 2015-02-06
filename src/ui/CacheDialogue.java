@@ -1,31 +1,41 @@
 package ui;
 
 import cashtykh.ICache;
-import com.sun.tools.javac.code.Scope;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.event.*;
+import java.util.Iterator;
 
 public class CacheDialogue extends JDialog {
     private JPanel contentPane;
     private JButton buttonAdd;
 	private JButton buttonRemove;
+	private JButton buttonGet;
     private JButton buttonCancel;
-	private JList list;
-	ListModelCacheSync listModel;
+	private JList secondLevelList;
+	private JList firstLevelList;
+	ListModelCacheSync firstLevelListModel;
+	ListModelCacheSync secondLevelListModel;
 
 	private int selectedIndex;
+	private ICache cache;
 
-    public CacheDialogue(ICache cache) {
-        setContentPane(contentPane);
+	public CacheDialogue(ICache cache) {
+		this.cache = cache;
+		setContentPane(contentPane);
         setModal(true);
 
-		initList(cache);
+		firstLevelListModel = new ListModelCacheSync(cache, true);
+		initList(firstLevelList,  firstLevelListModel);
+		secondLevelListModel = new ListModelCacheSync(cache, false);
+		initList(secondLevelList, secondLevelListModel);
 
 		getRootPane().setDefaultButton(buttonAdd);
 
         buttonAdd.addActionListener(e -> onAdd());
+
+		buttonGet.addActionListener(e -> onGet());
 
 		buttonRemove.addActionListener(e -> onRemove());
 
@@ -42,25 +52,31 @@ public class CacheDialogue extends JDialog {
                 JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
-	private void initList(ICache cache) {
-		listModel = new ListModelCacheSync(cache);
-		list.addListSelectionListener(e -> onSelectionChanged(e));
-		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		list.setModel(listModel);
+	private void onGet() {
+		Object key = firstLevelListModel.get(selectedIndex);
+		JOptionPane.showMessageDialog(null, cache.retrieve(key));
 	}
 
-	private void onSelectionChanged(ListSelectionEvent e) {
+	private void initList(JList jList, ListModelCacheSync listModel) {
+		jList.addListSelectionListener(e -> onSelectionChanged(e, jList));
+		jList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		jList.setModel(listModel);
+	}
+
+	private void onSelectionChanged(ListSelectionEvent e, JList list) {
 		selectedIndex = list.getSelectedIndex();
 	}
 
 	private void onAdd() {
 		String newString = StringInput.getString();
-		listModel.push(newString, newString);
+		firstLevelListModel.push(newString, newString);
+		secondLevelListModel.sync();
     }
 
 	private void onRemove() {
-		listModel.removeElement(selectedIndex);
-		list.clearSelection();
+		firstLevelListModel.removeElement(selectedIndex);
+		secondLevelListModel.sync();
+		firstLevelList.clearSelection();
 	}
 
     private void onCancel() {
