@@ -7,7 +7,8 @@ import java.util.NoSuchElementException;
  */
 public interface ICache<Key, Value> {
     public Value get(Key key) throws NoSuchElementException;
-    public void put(Key key, Value value);
+
+	public void put(Key key, Value value);
 
     /**
      *

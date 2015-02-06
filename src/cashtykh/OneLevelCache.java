@@ -7,36 +7,15 @@ import java.util.NoSuchElementException;
 /**
  * Created by shtykh on 06/02/15.
  */
-public class OneLevelCache<Value> implements ICache<String, Value> {
-    private HashMap<String, Value> cache;
+public class OneLevelCache<Value> extends LinkedHashMap<String, Value> implements ICache<String, Value> {
 
+	@Override
+	public Value get(String s) throws NoSuchElementException {
+		return super.get(s);
+	}
 
-    @Override
-    public Value get(String s) throws NoSuchElementException {
-        if (null == cache) {
-            throw new NoSuchElementException("Could not get an object with such key: " + s);
-        }
-        return cache.get(s);
-    }
-
-    @Override
-    public void put(String s, Value o) {
-        if (null == cache) {
-            cache = new LinkedHashMap<>();
-        }
-        cache.put(s, o);
-    }
-
-    @Override
-    public boolean remove(String s) {
-        if (null == cache) {
-            return false;
-        }
-        return null == cache.remove(s);
-    }
-
-    @Override
-    public int size() {
-        return null == cache ? 0 : cache.size();
-    }
+	@Override
+	public boolean remove(String s) {
+		return null != super.remove(s);
+	}
 }

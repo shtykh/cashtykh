@@ -5,9 +5,7 @@ import com.sun.tools.javac.code.Scope;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 
 public class CacheDialogue extends JDialog {
     private JPanel contentPane;
