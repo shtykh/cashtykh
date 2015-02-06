@@ -7,7 +7,7 @@ import ui.CacheDialogue;
  */
 public class Main {
 	public static void main (String[] args) {
-		ICache cache = new TwoLevelCache<String>(5, 10);
+		ICache cache = new TwoLevelCache<String, String>(5, 10);
 		CacheDialogue.show(cache);
 		System.exit(0);
 	}

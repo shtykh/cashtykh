@@ -13,7 +13,7 @@ public class Serializer {
 		(new File(currentDirectory)).mkdirs();
 	}
 
-	public static String getFileName(String key) {
+	public static <Key> String getFileName(Key key) {
 		return currentDirectory + "/" + key;
 	}
 

@@ -4,6 +4,7 @@ import cashtykh.ICache;
 
 import javax.swing.*;
 import java.util.Iterator;
+import java.util.function.Consumer;
 
 /**
  * Created by shtykh on 06/02/15.
@@ -32,8 +33,6 @@ public class ListModelCacheSync extends DefaultListModel {
 	public void sync() {
 		super.clear();
 		Iterator keyIterator = firstLevel ? cache.firstLevelIterator() : cache.secondLevelIterator();
-		while (keyIterator.hasNext()) {
-			super.addElement(keyIterator.next());
-		}
+		keyIterator.forEachRemaining(obj -> super.addElement(obj));
 	}
 }

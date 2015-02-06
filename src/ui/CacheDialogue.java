@@ -15,8 +15,11 @@ public class CacheDialogue extends JDialog {
     private JButton buttonCancel;
 	private JList secondLevelList;
 	private JList firstLevelList;
+	private JSpinner spinner1;
+	private JSpinner spinner2;
 	ListModelCacheSync firstLevelListModel;
 	ListModelCacheSync secondLevelListModel;
+	private boolean isFirstListSelected;
 
 	private int selectedIndex;
 	private ICache cache;
@@ -53,17 +56,30 @@ public class CacheDialogue extends JDialog {
     }
 
 	private void onGet() {
-		Object key = firstLevelListModel.get(selectedIndex);
+		Object key;
+		if (isFirstListSelected) {
+			key = firstLevelListModel.get(selectedIndex);
+		} else {
+			key = secondLevelListModel.get(selectedIndex);
+		}
 		JOptionPane.showMessageDialog(null, cache.retrieve(key));
+		secondLevelListModel.sync();
+		firstLevelListModel.sync();
 	}
 
 	private void initList(JList jList, ListModelCacheSync listModel) {
-		jList.addListSelectionListener(e -> onSelectionChanged(e, jList));
+		jList.addListSelectionListener(e -> onSelectionChanged(jList == firstLevelList, jList));
 		jList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		jList.setModel(listModel);
 	}
 
-	private void onSelectionChanged(ListSelectionEvent e, JList list) {
+	private void onSelectionChanged(boolean isFirstListSelected, JList list) {
+		this.isFirstListSelected = isFirstListSelected;
+		if (isFirstListSelected) {
+			secondLevelList.clearSelection();
+		} else {
+			firstLevelList.clearSelection();
+		}
 		selectedIndex = list.getSelectedIndex();
 	}
 
@@ -74,9 +90,10 @@ public class CacheDialogue extends JDialog {
     }
 
 	private void onRemove() {
-		firstLevelListModel.removeElement(selectedIndex);
-		secondLevelListModel.sync();
-		firstLevelList.clearSelection();
+		if (isFirstListSelected) {
+			firstLevelListModel.removeElement(selectedIndex);
+			secondLevelListModel.sync();
+		}
 	}
 
     private void onCancel() {
