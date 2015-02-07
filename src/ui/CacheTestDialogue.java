@@ -1,13 +1,16 @@
 package ui;
 
 import cashtykh.ICache;
+import cashtykh.TwoLevelCache;
+import util.Story;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.text.DefaultFormatter;
 import java.awt.event.*;
-import java.util.Iterator;
 
-public class CacheDialogue extends JDialog {
+public class CacheTestDialogue extends JDialog {
     private JPanel contentPane;
     private JButton buttonAdd;
 	private JButton buttonRemove;
@@ -24,10 +27,21 @@ public class CacheDialogue extends JDialog {
 	private int selectedIndex;
 	private ICache cache;
 
-	public CacheDialogue(ICache cache) {
+	public CacheTestDialogue(TwoLevelCache cache) {
 		this.cache = cache;
 		setContentPane(contentPane);
         setModal(true);
+
+		initSpinner(spinner1, cache.getCapacity1(), e -> {
+			cache.setCapacity1((int) spinner1.getValue());
+			firstLevelListModel.sync();
+			secondLevelListModel.sync();
+		});
+		initSpinner(spinner2, cache.getCapacity2(), e -> {
+			cache.setCapacity2((int) spinner2.getValue());
+			firstLevelListModel.sync();
+			secondLevelListModel.sync();
+		});
 
 		firstLevelListModel = new ListModelCacheSync(cache, true);
 		initList(firstLevelList,  firstLevelListModel);
@@ -55,6 +69,15 @@ public class CacheDialogue extends JDialog {
                 JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
+	private void initSpinner(JSpinner spinner, int capacity, ChangeListener changeListener) {
+		spinner.setValue(capacity);
+		JComponent comp = spinner.getEditor();
+		JFormattedTextField field = (JFormattedTextField) comp.getComponent(0);
+		DefaultFormatter formatter = (DefaultFormatter) field.getFormatter();
+		formatter.setCommitsOnValidEdit(true);
+		spinner.addChangeListener(changeListener);
+	}
+
 	private void onGet() {
 		Object key;
 		if (isFirstListSelected) {
@@ -62,7 +85,7 @@ public class CacheDialogue extends JDialog {
 		} else {
 			key = secondLevelListModel.get(selectedIndex);
 		}
-		JOptionPane.showMessageDialog(null, cache.retrieve(key));
+		JOptionPane.showMessageDialog(null, cache.get(key));
 		secondLevelListModel.sync();
 		firstLevelListModel.sync();
 	}
@@ -85,7 +108,7 @@ public class CacheDialogue extends JDialog {
 
 	private void onAdd() {
 		String newString = StringInput.getString();
-		firstLevelListModel.push(newString, newString);
+		firstLevelListModel.push(newString, new Story(newString));
 		secondLevelListModel.sync();
     }
 
@@ -93,6 +116,9 @@ public class CacheDialogue extends JDialog {
 		if (isFirstListSelected) {
 			firstLevelListModel.removeElement(selectedIndex);
 			secondLevelListModel.sync();
+		} else {
+			firstLevelListModel.sync();
+			secondLevelListModel.removeElement(selectedIndex);
 		}
 	}
 
@@ -100,8 +126,8 @@ public class CacheDialogue extends JDialog {
         dispose();
     }
 
-    public static void show(ICache cache) {
-        CacheDialogue dialog = new CacheDialogue(cache);
+    public static void show(TwoLevelCache cache) {
+        CacheTestDialogue dialog = new CacheTestDialogue(cache);
         dialog.pack();
         dialog.setVisible(true);
     }

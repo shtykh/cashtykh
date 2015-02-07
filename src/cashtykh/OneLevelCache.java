@@ -1,6 +1,6 @@
 package cashtykh;
 
-import util.Serializer;
+import com.sun.tools.javac.util.Pair;
 
 import java.util.*;
 
@@ -9,43 +9,54 @@ import java.util.*;
  */
 public class OneLevelCache<Key, Value> implements ICache<Key, Value> {
 
-	private final int capacity;
+	private int capacity;
+	private final boolean controlCapacity;
 
-	private ICache <Key, Value> cache;
+	private Storage <Key, Value> cache;
 
 	private LinkedList<Key> keys;
 
-	public OneLevelCache(int capacity, ICache<Key, Value> cache) {
+	public OneLevelCache(int capacity, boolean controlCapacity, Storage<Key, Value> cache) {
 		this.capacity = capacity;
+		this.controlCapacity = controlCapacity;
 		this.cache = cache;
 		keys = new LinkedList<>();
 	}
 
 	@Override
-	public Value retrieve(Key key) throws NoSuchElementException {
-		Value value = delete(key);
-		cache(key, value);
+	public Value get(Key key) throws NoSuchElementException {
+		Value value = remove(key);
+		put(key, value);
 		return value;
 	}
 
 	@Override
-	public void cache(Key key, Value value) {
+	public Value put(Key key, Value value) {
+		keys.remove(key);
 		keys.offerFirst(key);
-		cache.cache(key, value);
+		Value put = cache.put(key, value);
+		if (controlCapacity && size() > capacity) {
+			pollLast();
+		}
+		return put;
 	}
 
 	@Override
-	public Value delete(Key key) {
+	public boolean containsKey(Key key) {
+		return cache.containsKey(key);
+	}
+
+	@Override
+	public Value remove(Key key) {
 		if (keys.contains(key)) {
 			keys.remove(key);
-			Value deleted = cache.delete(key);
+			Value deleted = cache.remove(key);
 			return deleted;
 		} else {
 			return null;
 		}
 	}
 
-	@Override
 	public Iterator<Key> iterator() {
 		return keys.iterator();
 	}
@@ -53,5 +64,35 @@ public class OneLevelCache<Key, Value> implements ICache<Key, Value> {
 	@Override
 	public int size() {
 		return keys.size();
+	}
+
+	@Override
+	public int getCapacity() {
+		return capacity;
+	}
+
+	@Override
+	public Value offerLast(Key key, Value value) {
+		keys.remove(key);
+		keys.offerLast(key);
+		return cache.put(key, value);
+	}
+
+	@Override
+	public Pair<Key, Value> pollLast() {
+		Key key = keys.pollLast();
+		Value value = cache.remove(key);
+		return new Pair<>(key, value);
+	}
+
+	@Override
+	public Pair<Key, Value> pollFirst() {
+		Key key = keys.pollFirst();
+		Value value = cache.remove(key);
+		return new Pair<>(key, value);
+	}
+
+	public void setCapacity(int capacity) {
+		this.capacity = capacity;
 	}
 }

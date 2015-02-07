@@ -1,6 +1,6 @@
 package cashtykh;
 
-import util.Serializer;
+import com.sun.tools.javac.util.Pair;
 
 import java.util.*;
 
@@ -9,86 +9,116 @@ import java.util.*;
  */
 public class TwoLevelCache<Key, Value> implements ICache<Key, Value> {
 
-	private final int firstLevelCapacity;
-	private int secondLevelCapacity;
+	private OneLevelCache<Key, Value> level1;
+	private OneLevelCache<Key, Value> level2;
 
-	private Map<Key, Value> firstLevel;
-
-	private LinkedList<Key> firstLevelKeys;
-	private LinkedList<Key> secondLevelKeys;
 
 	public TwoLevelCache(int firstLevelCapacity, int secondLevelCapacity) {
-		this.firstLevelCapacity = firstLevelCapacity;
-		this.secondLevelCapacity = secondLevelCapacity;
-		firstLevel = new HashMap<>();
-		firstLevelKeys = new LinkedList<>();
-		secondLevelKeys = new LinkedList<>();
+		level1 = new OneLevelCache<>(firstLevelCapacity, false, new MemoryStorage<>());
+		level2 = new OneLevelCache<>(secondLevelCapacity, true, new MemoryStorage<>());
 	}
 
 	@Override
-	public Value retrieve(Key key) throws NoSuchElementException {
-		Value value = delete(key);
-		cache(key, value);
+	public Value get(Key key) throws NoSuchElementException {
+		Value value = remove(key);
+		put(key, value);
 		return value;
 	}
 
 	@Override
-	public void cache(Key key, Value value) {
-		firstLevelKeys.offerFirst(key);
-		firstLevel.put(key, value);
-		serializeIfNeeded();
+	public Value put(Key key, Value value) {
+		Value toReturn;
+		if (level2.containsKey(key)) {
+			toReturn = level2.remove(key);
+			level1.put(key, value);
+		} else {
+			toReturn = level1.put(key, value);
+		}
+		pushDownIfNeeded();
+		return toReturn;
 	}
 
 	@Override
-	public Value delete(Key key) {
-		if (firstLevelKeys.contains(key)) {
-			firstLevelKeys.remove(key);
-			Value deleted = firstLevel.remove(key);
-			deserializeIfNeeded();
+	public boolean containsKey(Key key) {
+		return level1.containsKey(key) || level2.containsKey(key);
+	}
+
+	@Override
+	public Value remove(Key key) {
+		if (level1.containsKey(key)) {
+			Value deleted = level1.remove(key);
+			pushUpIfNeeded();
 			return deleted;
 		} else {
-			// TODO remove file
-			String fileName = Serializer.getFileName(key);
-			Value deserialized = (Value) Serializer.deserialize(fileName);
-			secondLevelKeys.remove(key);
-			return deserialized;
+			return level2.remove(key);
 		}
 	}
 
-	private void serializeIfNeeded() {
-		while (firstLevelKeys.size() > firstLevelCapacity) {
-			Key eldestKey = firstLevelKeys.pollLast();
-			secondLevelKeys.offerFirst(eldestKey);
-			while (secondLevelKeys.size() > secondLevelCapacity) {
-				secondLevelKeys.removeLast();
-				//todo remove file
-			}
-			Serializer.serialize(Serializer.getFileName(eldestKey), firstLevel.get(eldestKey));
-			firstLevel.remove(eldestKey);
+	private void pushDownIfNeeded() {
+		while (level1.size() > level1.getCapacity()) {
+			Pair<Key, Value> down = level1.pollLast();
+			level2.put(down.fst, down.snd);
 		}
 	}
 
-	private void deserializeIfNeeded() {
-		while (firstLevelKeys.size() < firstLevelCapacity && !secondLevelKeys.isEmpty()) {
-			Key key = secondLevelKeys.pollFirst();
-			String fileName = Serializer.getFileName(key);
-			Value deserialized = (Value) Serializer.deserialize(fileName);
-			firstLevel.put(key, deserialized);
+	private void pushUpIfNeeded() {
+		while (level1.size() < level1.getCapacity() && level2.size() != 0) {
+			Pair<Key, Value> up = level2.pollFirst();
+			level1.offerLast(up.fst, up.snd);
 		}
 	}
 
-	@Override
+
 	public Iterator<Key> firstLevelIterator() {
-		return firstLevelKeys.iterator();
+		return level1.iterator();
 	}
 
-	@Override
 	public Iterator<Key> secondLevelIterator() {
-		return secondLevelKeys.iterator();
+		return level2.iterator();
 	}
 
 	@Override
 	public int size() {
-		return firstLevelKeys.size() + secondLevelKeys.size();
+		return level1.size() + level2.size();
+	}
+
+	@Override
+	public int getCapacity() {
+		return level1.getCapacity() + level2.getCapacity();
+	}
+
+	@Override
+	public Value offerLast(Key key, Value value) {
+		return level2.offerLast(key, value);
+	}
+
+	@Override
+	public Pair<Key, Value> pollLast() {
+		return level2.pollLast();
+	}
+
+	@Override
+	public Pair<Key, Value> pollFirst() {
+		return level1.pollFirst();
+	}
+
+	public int getCapacity1() {
+		return level1.getCapacity();
+	}
+
+	public int getCapacity2() {
+		return level2.getCapacity();
+	}
+
+	public void setCapacity1(int capacity1) {
+		level1.setCapacity(capacity1);
+		pushDownIfNeeded();
+		pushUpIfNeeded();
+	}
+
+	public void setCapacity2(int capacity2) {
+		level2.setCapacity(capacity2);
+		pushDownIfNeeded();
+		pushUpIfNeeded();
 	}
 }
