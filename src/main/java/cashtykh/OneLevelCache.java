@@ -54,6 +54,11 @@ public class OneLevelCache<Key, Value extends Serializable> implements ICache<Ke
 		}
 	}
 
+	@Override
+	public void clear() {
+		cache.clear();
+	}
+
 	public Iterator<Key> iterator() {
 		return keys.iterator();
 	}

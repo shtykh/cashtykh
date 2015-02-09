@@ -108,9 +108,9 @@ public class CacheTestDialogue<Key extends Serializable> extends JDialog {
 	}
 
 	private void onAdd() {
-		String newString = StringInput.getString();
-		if (null != newString) {
-			firstLevelListModel.push(newString, new Story(newString));
+		Story newStory = StoryInput.getStory();
+		if (null != newStory) {
+			firstLevelListModel.push(newStory.getTitle(), newStory);
 			secondLevelListModel.sync();
 		}
     }
@@ -126,7 +126,8 @@ public class CacheTestDialogue<Key extends Serializable> extends JDialog {
 	}
 
     private void onCancel() {
-        dispose();
+        cache.clear();
+		dispose();
     }
 
     public static void show(TwoLevelCache cache) {

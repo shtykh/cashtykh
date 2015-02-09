@@ -5,19 +5,19 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Date;
-import java.util.NoSuchElementException;
+import org.apache.commons.io.FileUtils;
 
 /**
  * Created by shtykh on 07/02/15.
  */
 public class OsStorage<Key, Value extends Serializable> implements Storage<Key, Value> {
-	private static String currentDirectory = System.getProperty("user.dir") + "/cashed/" + (new Date()).toString() + "/";
+	private static String directory = System.getProperty("user.dir") + "/cashed/" + (new Date()).toString() + "/";
 	static {
-		(new File(currentDirectory)).mkdirs();
+		(new File(directory)).mkdirs();
 	}
 
 	private static <Key> String getFileName(Key key) {
-		return currentDirectory + "/" + key;
+		return directory + "/" + key;
 	}
 
 	private static void serialize(String fileName, Object object) {
@@ -72,6 +72,19 @@ public class OsStorage<Key, Value extends Serializable> implements Storage<Key, 
 			throw new RuntimeException("Removing " + key + " : error!");
 		}
 		return value;
+	}
+
+	@Override
+	public void clear() {
+		try {
+			FileUtils.deleteDirectory(new File(directory));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private Path getPath(String string) {
+		return FileSystems.getDefault().getPath(string);
 	}
 
 	private Path getPath(Key key) {

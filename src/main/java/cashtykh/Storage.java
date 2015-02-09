@@ -12,4 +12,6 @@ public interface Storage<Key, Value extends Serializable> {
 	public Value put(Key key, Value value);
 
 	public Value remove(Key key);
+
+	public void clear();
 }

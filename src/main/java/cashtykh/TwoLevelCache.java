@@ -55,10 +55,19 @@ public class TwoLevelCache<Key, Value extends Serializable> implements ICache<Ke
 		}
 	}
 
+	@Override
+	public void clear() {
+		level1.clear();
+		level2.clear();
+	}
+
 	private void pushDownIfNeeded() {
 		while (level1.size() > level1.getCapacity()) {
 			Pair<Key, Value> down = level1.pollLast();
 			level2.put(down.getLeft(), down.getRight());
+		}
+		while (level2.size() > level2.getCapacity()) {
+			level2.pollLast();
 		}
 	}
 
@@ -113,13 +122,13 @@ public class TwoLevelCache<Key, Value extends Serializable> implements ICache<Ke
 
 	public void setCapacity1(int capacity1) {
 		level1.setCapacity(capacity1);
-		pushDownIfNeeded();
 		pushUpIfNeeded();
+		pushDownIfNeeded();
 	}
 
 	public void setCapacity2(int capacity2) {
 		level2.setCapacity(capacity2);
-		pushDownIfNeeded();
 		pushUpIfNeeded();
+		pushDownIfNeeded();
 	}
 }
