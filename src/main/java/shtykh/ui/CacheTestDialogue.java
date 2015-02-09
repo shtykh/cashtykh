@@ -14,7 +14,7 @@ import java.util.Iterator;
 
 import static shtykh.ui.UiUtil.showError;
 
-public class CacheTestDialogue<Key extends Serializable> extends JDialog {
+public class CacheTestDialogue<Key> extends JDialog {
     private JPanel contentPane;
     private JButton buttonAdd;
 	private JButton buttonRemove;
