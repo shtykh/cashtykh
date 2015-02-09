@@ -6,7 +6,7 @@
 
     <groupId>shtykh</groupId>
     <artifactId>cashtykh</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <dependencies>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -27,7 +27,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>Main</mainClass>
+                            <mainClass>shtykh.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

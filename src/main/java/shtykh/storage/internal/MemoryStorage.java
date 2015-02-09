@@ -1,4 +1,6 @@
-package cashtykh;
+package shtykh.storage.internal;
+
+import shtykh.storage.Storage;
 
 import java.io.Serializable;
 import java.util.HashMap;

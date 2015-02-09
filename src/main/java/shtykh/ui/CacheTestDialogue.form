@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="ui.CacheTestDialogue">
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="shtykh.ui.CacheTestDialogue">
   <grid id="cbd77" binding="contentPane" layout-manager="GridLayoutManager" row-count="3" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="10" left="10" bottom="10" right="10"/>
     <constraints>
@@ -80,7 +80,7 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="d5373" class="javax.swing.JList" binding="firstLevelList">
+              <component id="d5373" class="javax.swing.JList" binding="list0">
                 <constraints/>
                 <properties/>
               </component>
@@ -95,7 +95,7 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="a5254" class="javax.swing.JList" binding="secondLevelList">
+          <component id="a5254" class="javax.swing.JList" binding="list1">
             <constraints/>
             <properties>
               <model/>
@@ -103,13 +103,13 @@
           </component>
         </children>
       </scrollpane>
-      <component id="eecca" class="javax.swing.JSpinner" binding="spinner1" default-binding="true">
+      <component id="eecca" class="javax.swing.JSpinner" binding="spinner0" default-binding="true">
         <constraints>
           <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
       </component>
-      <component id="e936" class="javax.swing.JSpinner" binding="spinner2" default-binding="true">
+      <component id="e936" class="javax.swing.JSpinner" binding="spinner1" default-binding="true">
         <constraints>
           <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
