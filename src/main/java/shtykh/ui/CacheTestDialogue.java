@@ -26,9 +26,6 @@ public class CacheTestDialogue<Key extends Serializable> extends JDialog {
 	private JSpinner spinner1;
 	private JCheckBox lastOnTop;
 
-	DefaultListModel listModel0;
-	DefaultListModel listModel1;
-
 	private boolean isFirstListSelected;
 	private int selectedIndex;
 
@@ -43,10 +40,8 @@ public class CacheTestDialogue<Key extends Serializable> extends JDialog {
 		initSpinner(spinner0, cache.getCapacityOfLevel(0), e -> onSpinnerChanged(spinner0, 0));
 		initSpinner(spinner1, cache.getCapacityOfLevel(1), e -> onSpinnerChanged(spinner1, 1));
 
-		listModel0 = new DefaultListModel();
-		initList(list0, listModel0);
-		listModel1 = new DefaultListModel();
-		initList(list1, listModel1);
+		initList(list0);
+		initList(list1);
 
 		initButtons();
 
@@ -98,18 +93,19 @@ public class CacheTestDialogue<Key extends Serializable> extends JDialog {
 		spinner.addChangeListener(changeListener);
 	}
 
-	private void initList(JList jList, DefaultListModel listModel) {
+	private void initList(JList jList) {
 		jList.addListSelectionListener(e -> onSelectionChanged(jList == list0, jList));
 		jList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		jList.setModel(listModel);
+		jList.setModel(new DefaultListModel<Key>());
 	}
 
 	private void sync() {
-		sync(cache, listModel0, 0);
-		sync(cache, listModel1, 1);
+		sync(cache, list0, 0);
+		sync(cache, list1, 1);
 	}
 
-	private void sync(IMultiLevelCache cache, DefaultListModel listModel, int level) {
+	private void sync(IMultiLevelCache cache, JList list, int level) {
+		DefaultListModel listModel = (DefaultListModel) list.getModel();
 		listModel.clear();
 		Iterator keyIterator = cache.keyIteratorOfLevel(level);
 		keyIterator.forEachRemaining(obj -> listModel.addElement(obj));
@@ -168,7 +164,8 @@ public class CacheTestDialogue<Key extends Serializable> extends JDialog {
 	}
 
 	private Key getSelectedKey() {
-		ListModel<Key> listModel = isFirstListSelected ? listModel0 : listModel1;
+		JList list = isFirstListSelected ? list0 : list1;
+		ListModel<Key> listModel = list.getModel();
 		return listModel.getElementAt(selectedIndex);
 	}
 
