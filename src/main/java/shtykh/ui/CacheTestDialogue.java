@@ -38,14 +38,8 @@ public class CacheTestDialogue<Key extends Serializable> extends JDialog {
         setModal(true);
 		setTitle("Cache test");
 
-		initSpinner(spinner0, cache.getCapacityOfLevel(0), e -> {
-			cache.setCapacityOfLevel(0, (int) spinner0.getValue());
-			sync();
-		});
-		initSpinner(spinner1, cache.getCapacityOfLevel(1), e -> {
-			cache.setCapacityOfLevel(1, (int) spinner1.getValue());
-			sync();
-		});
+		initSpinner(spinner0, cache.getCapacityOfLevel(0), e -> onSpinnerChanged(spinner0, 0));
+		initSpinner(spinner1, cache.getCapacityOfLevel(1), e -> onSpinnerChanged(spinner1, 1));
 
 		listModel0 = new DefaultListModel();
 		initList(list0, listModel0);
@@ -67,6 +61,16 @@ public class CacheTestDialogue<Key extends Serializable> extends JDialog {
 		contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
+
+	private void onSpinnerChanged(JSpinner spinner, int level) {
+		int newCapacity = (int) spinner.getValue();
+		if (newCapacity >= 0) {
+			cache.setCapacityOfLevel(level, newCapacity);
+			sync();
+		} else {
+			spinner.setValue(0);
+		}
+	}
 
 	public static void show(TwoLevelCache cache) {
 		CacheTestDialogue dialog = new CacheTestDialogue(cache);

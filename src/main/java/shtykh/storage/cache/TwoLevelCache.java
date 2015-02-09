@@ -104,6 +104,9 @@ public class TwoLevelCache<Key, Value extends Serializable> implements IMultiLev
 
 	@Override
 	public void setCapacityOfLevel(int level, int capacity) {
+		if (capacity < 0) {
+			throw new IllegalArgumentException("Capacity can not be negative!");
+		}
 		levels[level].setCapacity(capacity);
 		try {
 			pushUpIfNeeded();
