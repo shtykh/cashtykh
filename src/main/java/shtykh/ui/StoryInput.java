@@ -4,10 +4,11 @@ import shtykh.util.IdGenerator;
 import shtykh.util.Story;
 
 import javax.swing.*;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+
+import static shtykh.ui.UiUtil.showError;
 
 public class StoryInput extends JDialog {
 	private static IdGenerator idGenerator = new IdGenerator("Story");
@@ -58,7 +59,27 @@ public class StoryInput extends JDialog {
 
 	private void onOK() {
 		answer = new Story(textField.getText(), textPane.getText());
+		try {
+			checkAnswer(answer);
+		} catch (Exception e) {
+			showError("Story is not OK!", e);
+			return;
+		}
 		dispose();
+
+	}
+
+	private void checkAnswer(Story story) throws Exception{
+		if (story == null) {
+			throw new NullPointerException("Story shouldn't be null");
+
+		} else if (story.getTitle() == null) {
+			throw new NullPointerException("Story's title shouldn't be null");
+
+		}
+		if (story.getTitle().length() == 0) {
+			throw new Exception("Story's title shouldn't be empty");
+		}
 	}
 
 	private void onCancel() {

@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Iterator;
 
+import static shtykh.ui.UiUtil.showError;
+
 public class CacheTestDialogue<Key extends Serializable> extends JDialog {
     private JPanel contentPane;
     private JButton buttonAdd;
@@ -168,10 +170,6 @@ public class CacheTestDialogue<Key extends Serializable> extends JDialog {
 	private Key getSelectedKey() {
 		ListModel<Key> listModel = isFirstListSelected ? listModel0 : listModel1;
 		return listModel.getElementAt(selectedIndex);
-	}
-
-	private void showError(String errorTitle, IOException e) {
-		JOptionPane.showMessageDialog(null, e.getMessage(), errorTitle, JOptionPane.ERROR_MESSAGE);
 	}
 
 	private void onCancel() {
