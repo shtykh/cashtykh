@@ -115,6 +115,13 @@ public class TwoLevelCache<Key, Value extends Serializable> implements IMultiLev
 
 	// private methods
 
+	private void pushUpIfNeeded() throws IOException {
+		while (levels[0].size() < levels[0].getCapacity() && levels[1].size() != 0) {
+			Pair<Key, Value> up = levels[1].pollFirst();
+			levels[0].offerLast(up.getLeft(), up.getRight());
+		}
+	}
+
 	private void pushDownIfNeeded() throws IOException {
 		while (levels[0].size() > levels[0].getCapacity()) {
 			Pair<Key, Value> down = levels[0].pollLast();
@@ -122,13 +129,6 @@ public class TwoLevelCache<Key, Value extends Serializable> implements IMultiLev
 		}
 		while (levels[1].size() > levels[1].getCapacity()) {
 			levels[1].pollLast();
-		}
-	}
-
-	private void pushUpIfNeeded() throws IOException {
-		while (levels[0].size() < levels[0].getCapacity() && levels[1].size() != 0) {
-			Pair<Key, Value> up = levels[1].pollFirst();
-			levels[0].offerLast(up.getLeft(), up.getRight());
 		}
 	}
 }

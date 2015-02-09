@@ -131,7 +131,7 @@
           <text value="2nd Level Capacity"/>
         </properties>
       </component>
-      <component id="a48ad" class="javax.swing.JCheckBox" binding="lastSeenOnTop" default-binding="true">
+      <component id="a48ad" class="javax.swing.JCheckBox" binding="lastOnTop" default-binding="true">
         <constraints>
           <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>

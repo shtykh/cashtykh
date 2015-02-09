@@ -22,12 +22,14 @@ public class CacheTestDialogue<Key extends Serializable> extends JDialog {
 	private JList list1;
 	private JSpinner spinner0;
 	private JSpinner spinner1;
-	private JCheckBox lastSeenOnTop;
+	private JCheckBox lastOnTop;
+
 	DefaultListModel listModel0;
 	DefaultListModel listModel1;
-	private boolean isFirstListSelected;
 
+	private boolean isFirstListSelected;
 	private int selectedIndex;
+
 	private IMultiLevelCache cache;
 
 	public CacheTestDialogue(IMultiLevelCache cache) {
@@ -52,7 +54,8 @@ public class CacheTestDialogue<Key extends Serializable> extends JDialog {
 
 		initButtons();
 
-		lastSeenOnTop.addActionListener(e -> onLastSeenOnTopChanged());
+		lastOnTop.setSelected(cache.isLastOnTop());
+		lastOnTop.addActionListener(e -> onLastSeenOnTopChanged());
 
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
@@ -107,7 +110,7 @@ public class CacheTestDialogue<Key extends Serializable> extends JDialog {
 	}
 
 	private void onLastSeenOnTopChanged() {
-		cache.setLastOnTop(lastSeenOnTop.isSelected());
+		cache.setLastOnTop(lastOnTop.isSelected());
 	}
 
 	private void onSelectionChanged(boolean isFirstListSelected, JList list) {
