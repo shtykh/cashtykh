@@ -13,7 +13,7 @@ import shtykh.util.Serializer;
  * Created by shtykh on 07/02/15.
  */
 public class OsStorage<Key, Value extends Serializable> implements Storage<Key, Value> {
-	private static String directory = System.getProperty("user.dir") + "/cashed/" + (new Date()).toString() + "/";
+	private static String directory = System.getProperty("user.dir") + "/cash_" + (new Date()).toString().replaceAll(":", "_") + "/";
 	static {
 		(new File(directory)).mkdirs();
 	}
