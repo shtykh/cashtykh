@@ -120,35 +120,40 @@ public class CacheTestDialogue<Key extends Serializable> extends JDialog {
 				cache.put(newStory.getTitle(), newStory);
 			} catch (IOException e) {
 				showError("Adding to cache", e);
+				return;
 			}
 			sync();
 		}
     }
 
 	private void onRemove() {
-		if (isFirstListSelected) {
-			listModel0.removeElement(selectedIndex);
-		} else {
-			listModel1.removeElement(selectedIndex);
+		if (selectedIndex < 0) {
+			return;
+		}
+		try {
+			cache.remove(getSelectedKey());
+		} catch (IOException e) {
+			showError("Removing from cache", e);
+			return;
 		}
 		sync();
 	}
 
 	private void onGet() {
-		Key key;
-		if (isFirstListSelected) {
-			key = (Key) listModel0.get(selectedIndex);
-		} else {
-			key = (Key) listModel1.get(selectedIndex);
-		}
 		Serializable gotFromCache = null;
 		try {
-			gotFromCache = cache.get(key);
+			gotFromCache = cache.get(getSelectedKey());
 		} catch (IOException e) {
 			showError("Getting from cache", e);
+			return;
 		}
 		JOptionPane.showMessageDialog(null, gotFromCache, "", JOptionPane.PLAIN_MESSAGE);
 		sync();
+	}
+
+	private Key getSelectedKey() {
+		ListModel<Key> listModel = isFirstListSelected ? listModel0 : listModel1;
+		return listModel.getElementAt(selectedIndex);
 	}
 
 	private void showError(String errorTitle, IOException e) {

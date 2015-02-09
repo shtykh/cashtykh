@@ -24,7 +24,7 @@ public class OsStorage<Key, Value extends Serializable> implements Storage<Key, 
 
 	@Override
 	public Value put(Key key, Value value) throws IOException {
-		Value deserialized = get(key);
+		Value deserialized = remove(key);
 		Serializer.serialize(getFileName(key), value);
 		return deserialized;
 	}
