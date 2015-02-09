@@ -9,8 +9,9 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.DefaultFormatter;
 import java.awt.event.*;
+import java.io.Serializable;
 
-public class CacheTestDialogue extends JDialog {
+public class CacheTestDialogue<Key extends Serializable> extends JDialog {
     private JPanel contentPane;
     private JButton buttonAdd;
 	private JButton buttonRemove;
@@ -79,11 +80,11 @@ public class CacheTestDialogue extends JDialog {
 	}
 
 	private void onGet() {
-		Object key;
+		Key key;
 		if (isFirstListSelected) {
-			key = firstLevelListModel.get(selectedIndex);
+			key = (Key) firstLevelListModel.get(selectedIndex);
 		} else {
-			key = secondLevelListModel.get(selectedIndex);
+			key = (Key) secondLevelListModel.get(selectedIndex);
 		}
 		JOptionPane.showMessageDialog(null, cache.get(key));
 		secondLevelListModel.sync();
@@ -108,8 +109,10 @@ public class CacheTestDialogue extends JDialog {
 
 	private void onAdd() {
 		String newString = StringInput.getString();
-		firstLevelListModel.push(newString, new Story(newString));
-		secondLevelListModel.sync();
+		if (null != newString) {
+			firstLevelListModel.push(newString, new Story(newString));
+			secondLevelListModel.sync();
+		}
     }
 
 	private void onRemove() {

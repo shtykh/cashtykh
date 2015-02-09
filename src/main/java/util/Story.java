@@ -1,9 +1,11 @@
 package util;
 
+import java.io.Serializable;
+
 /**
  * Created by shtykh on 07/02/15.
  */
-public class Story {
+public class Story implements Serializable{
 	private String title;
 
 	public Story(String title) {

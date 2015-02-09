@@ -1,13 +1,14 @@
 package cashtykh;
 
-import com.sun.tools.javac.util.Pair;
+import org.apache.commons.lang3.tuple.Pair;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * Created by shtykh on 06/02/15.
  */
-public class TwoLevelCache<Key, Value> implements ICache<Key, Value> {
+public class TwoLevelCache<Key, Value extends Serializable> implements ICache<Key, Value> {
 
 	private OneLevelCache<Key, Value> level1;
 	private OneLevelCache<Key, Value> level2;
@@ -15,7 +16,7 @@ public class TwoLevelCache<Key, Value> implements ICache<Key, Value> {
 
 	public TwoLevelCache(int firstLevelCapacity, int secondLevelCapacity) {
 		level1 = new OneLevelCache<>(firstLevelCapacity, false, new MemoryStorage<>());
-		level2 = new OneLevelCache<>(secondLevelCapacity, true, new MemoryStorage<>());
+		level2 = new OneLevelCache<>(secondLevelCapacity, true, new OsStorage<>());
 	}
 
 	@Override
@@ -57,14 +58,14 @@ public class TwoLevelCache<Key, Value> implements ICache<Key, Value> {
 	private void pushDownIfNeeded() {
 		while (level1.size() > level1.getCapacity()) {
 			Pair<Key, Value> down = level1.pollLast();
-			level2.put(down.fst, down.snd);
+			level2.put(down.getLeft(), down.getRight());
 		}
 	}
 
 	private void pushUpIfNeeded() {
 		while (level1.size() < level1.getCapacity() && level2.size() != 0) {
 			Pair<Key, Value> up = level2.pollFirst();
-			level1.offerLast(up.fst, up.snd);
+			level1.offerLast(up.getLeft(), up.getRight());
 		}
 	}
 

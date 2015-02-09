@@ -41,7 +41,7 @@ public class StringInput extends JDialog {
 	}
 
 	private void onCancel() {
-		answer = "";
+		answer = null;
 		dispose();
 	}
 

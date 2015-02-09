@@ -4,12 +4,13 @@ import cashtykh.ICache;
 import cashtykh.TwoLevelCache;
 
 import javax.swing.*;
+import java.io.Serializable;
 import java.util.Iterator;
 
 /**
  * Created by shtykh on 06/02/15.
  */
-public class ListModelCacheSync extends DefaultListModel {
+public class ListModelCacheSync<Value extends Serializable> extends DefaultListModel {
 	private final TwoLevelCache cache;
 	private boolean firstLevel;
 
@@ -19,7 +20,7 @@ public class ListModelCacheSync extends DefaultListModel {
 		this.firstLevel = firstLevel;
 	}
 
-	public void push(Object obj, Object value) {
+	public void push(Object obj, Value value) {
 		cache.put(obj, value);
 		sync();
 	}

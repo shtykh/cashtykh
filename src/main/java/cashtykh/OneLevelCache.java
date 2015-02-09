@@ -1,13 +1,15 @@
 package cashtykh;
 
-import com.sun.tools.javac.util.Pair;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * Created by shtykh on 06/02/15.
  */
-public class OneLevelCache<Key, Value> implements ICache<Key, Value> {
+public class OneLevelCache<Key, Value extends Serializable> implements ICache<Key, Value> {
 
 	private int capacity;
 	private final boolean controlCapacity;
@@ -42,11 +44,6 @@ public class OneLevelCache<Key, Value> implements ICache<Key, Value> {
 	}
 
 	@Override
-	public boolean containsKey(Key key) {
-		return cache.containsKey(key);
-	}
-
-	@Override
 	public Value remove(Key key) {
 		if (keys.contains(key)) {
 			keys.remove(key);
@@ -72,6 +69,11 @@ public class OneLevelCache<Key, Value> implements ICache<Key, Value> {
 	}
 
 	@Override
+	public boolean containsKey(Key key) {
+		return keys.contains(key);
+	}
+
+	@Override
 	public Value offerLast(Key key, Value value) {
 		keys.remove(key);
 		keys.offerLast(key);
@@ -82,14 +84,14 @@ public class OneLevelCache<Key, Value> implements ICache<Key, Value> {
 	public Pair<Key, Value> pollLast() {
 		Key key = keys.pollLast();
 		Value value = cache.remove(key);
-		return new Pair<>(key, value);
+		return new ImmutablePair<>(key, value);
 	}
 
 	@Override
 	public Pair<Key, Value> pollFirst() {
 		Key key = keys.pollFirst();
 		Value value = cache.remove(key);
-		return new Pair<>(key, value);
+		return new ImmutablePair<>(key, value);
 	}
 
 	public void setCapacity(int capacity) {
