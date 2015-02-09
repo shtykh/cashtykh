@@ -8,7 +8,9 @@ import shtykh.storage.internal.OsStorage;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.*;
+import java.util.Iterator;
+
+import static com.google.common.base.Objects.firstNonNull;
 
 /**
  * Created by shtykh on 06/02/15.
@@ -16,10 +18,12 @@ import java.util.*;
 public class TwoLevelCache<Key, Value extends Serializable> implements IMultiLevelCache<Key, Value> {
 
 	private IOneLevelCache<Key, Value>[] levels = new OneLevelCache[2];
+	private boolean lastOnTop = false;
 
-	public TwoLevelCache(int level0Capacity, int level1Capacity) {
+	public TwoLevelCache(int level0Capacity, int level1Capacity, boolean lastOnTop) {
 		levels[0] = new OneLevelCache<>(level0Capacity, false, new MemoryStorage<>());
 		levels[1] = new OneLevelCache<>(level1Capacity, true, new OsStorage<>());
+		setLastOnTop(lastOnTop);
 	}
 
 	// Storage methods
@@ -59,6 +63,22 @@ public class TwoLevelCache<Key, Value extends Serializable> implements IMultiLev
 	@Override
 	public int size() {
 		return levels[0].size() + levels[1].size();
+	}
+
+	@Override
+	public Value getAndDoNotPutOnTop(Key key) throws IOException {
+		return firstNonNull(levels[0].getAndDoNotPutOnTop(key), levels[1].getAndDoNotPutOnTop(key));
+	}
+
+	@Override
+	public boolean isLastOnTop() {
+		return lastOnTop;
+	}
+
+	public void setLastOnTop(boolean lastOnTop) {
+		this.lastOnTop = lastOnTop;
+		levels[0].setLastOnTop(lastOnTop);
+		levels[1].setLastOnTop(lastOnTop);
 	}
 
 	@Override

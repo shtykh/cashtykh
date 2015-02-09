@@ -23,14 +23,7 @@ public class OsStorage<Key, Value extends Serializable> implements Storage<Key, 
 	}
 
 	@Override
-	public Value put(Key key, Value value) throws IOException {
-		Value deserialized = remove(key);
-		Serializer.serialize(getFileName(key), value);
-		return deserialized;
-	}
-
-	@Override
-	public Value remove(Key key) throws IOException {
+	public Value get(Key key) throws IOException {
 		Value value;
 		try {
 			value = (Value) Serializer.deserialize(getFileName(key));
@@ -39,6 +32,19 @@ public class OsStorage<Key, Value extends Serializable> implements Storage<Key, 
 		} catch (ClassNotFoundException e) {
 			throw new RuntimeException("Internal error while getting from OsStorage: \n" + e.getMessage());
 		}
+		return value;
+	}
+
+	@Override
+	public Value put(Key key, Value value) throws IOException {
+		Value deserialized = remove(key);
+		Serializer.serialize(getFileName(key), value);
+		return deserialized;
+	}
+
+	@Override
+	public Value remove(Key key) throws IOException {
+		Value value = get(key);
 		Files.deleteIfExists(getPath(key));
 		return value;
 	}

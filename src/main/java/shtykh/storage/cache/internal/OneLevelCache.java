@@ -19,6 +19,8 @@ public class OneLevelCache<Key, Value extends Serializable> implements IOneLevel
 	private Storage<Key, Value> storage;
 	private LinkedList<Key> keys;
 
+	private boolean lastOnTop = false;
+
 	public OneLevelCache(int capacity, boolean trimToCapacity, Storage<Key, Value> storage) {
 		this.capacity = capacity;
 		this.trimToCapacity = trimToCapacity;
@@ -60,6 +62,20 @@ public class OneLevelCache<Key, Value extends Serializable> implements IOneLevel
 	@Override
 	public int size() {
 		return keys.size();
+	}
+
+	@Override
+	public Value getAndDoNotPutOnTop(Key key) throws IOException {
+		return storage.get(key);
+	}
+
+	@Override
+	public boolean isLastOnTop() {
+		return lastOnTop;
+	}
+
+	public void setLastOnTop(boolean lastOnTop) {
+		this.lastOnTop = lastOnTop;
 	}
 
 	@Override
