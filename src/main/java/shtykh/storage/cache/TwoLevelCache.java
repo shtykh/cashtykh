@@ -25,13 +25,6 @@ public class TwoLevelCache<Key, Value extends Serializable> implements IMultiLev
 	// Storage methods
 
 	@Override
-	public Value get(Key key) throws IOException {
-		Value value = remove(key);
-		put(key, value);
-		return value;
-	}
-
-	@Override
 	public Value put(Key key, Value value) throws IOException {
 		Value toReturn;
 		if (levels[1].containsKey(key)) {

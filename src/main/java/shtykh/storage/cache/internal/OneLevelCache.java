@@ -29,13 +29,6 @@ public class OneLevelCache<Key, Value extends Serializable> implements IOneLevel
 	// Storage methods
 
 	@Override
-	public Value get(Key key) throws IOException {
-		Value value = remove(key);
-		put(key, value);
-		return value;
-	}
-
-	@Override
 	public Value put(Key key, Value value) throws IOException {
 		keys.remove(key);
 		keys.offerFirst(key);
