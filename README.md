@@ -3,11 +3,11 @@
 One can not simply load tweets via twitter API.
 To do that you should create a json-file like this:
 
-{
-  "сonsumerKey": "blablabla0",
-  "сonsumerSecret": "blablabla1",
-  "accessToken": "blablabla2-blablabla3",
-  "accessSecret": "blablabla4"
+{<br/>
+  "сonsumerKey": "blablabla0", <br/>
+  "сonsumerSecret": "blablabla1", <br/>
+  "accessToken": "blablabla2-blablabla3", <br/>
+  "accessSecret": "blablabla4" <br/>
 }
 
 then name it "auth" and put it to project folder.
