@@ -1,13 +1,18 @@
 package shtykh.ui;
 
+import oauth.signpost.exception.OAuthException;
+import org.json.JSONException;
 import shtykh.storage.cache.IMultiLevelCache;
 import shtykh.storage.cache.TwoLevelCache;
 import shtykh.util.Story;
+import shtykh.tweets.TwitterClient;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.DefaultFormatter;
-import java.awt.event.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Iterator;
@@ -25,11 +30,14 @@ public class CacheTestDialogue<Key> extends JDialog {
 	private JSpinner spinner0;
 	private JSpinner spinner1;
 	private JCheckBox lastOnTop;
+	private JButton buttonLoad;
+	private JSlider tweetCountSlider;
 
 	private boolean isFirstListSelected;
 	private int selectedIndex;
 
 	private IMultiLevelCache cache;
+	private TwitterClient twitterClient;
 
 	public CacheTestDialogue(IMultiLevelCache cache) {
 		this.cache = cache;
@@ -79,6 +87,7 @@ public class CacheTestDialogue<Key> extends JDialog {
 		getRootPane().setDefaultButton(buttonAdd);
 
 		buttonAdd.addActionListener(e -> onAdd());
+		buttonLoad.addActionListener(e -> onLoad());
 		buttonGet.addActionListener(e -> onGet());
 		buttonRemove.addActionListener(e -> onRemove());
 		buttonCancel.addActionListener(e -> onCancel());
@@ -125,6 +134,38 @@ public class CacheTestDialogue<Key> extends JDialog {
 		selectedIndex = list.getSelectedIndex();
 	}
 
+	private void onLoad() {
+		try {
+			checkTwitterClient();
+		} catch (JSONException | IOException e) {
+			showError("Your authorization data is broken!", e);
+			return;
+		}
+		String query = StringInput.getString();
+		if (null != query) {
+			try {
+				Story tweets = twitterClient.searchTweets(query, tweetCountSlider.getValue());
+				cache.put(query, tweets);
+			} catch (OAuthException e) {
+				showError("Authorization failed", e);
+				return;
+			} catch (IOException e) {
+				showError("Adding to cache", e);
+				return;
+			} catch (JSONException e) {
+				showError("Tweet parsing failed", e);
+				e.printStackTrace();
+			}
+			sync();
+		}
+	}
+
+	private void checkTwitterClient() throws JSONException, IOException {
+		if (null == twitterClient) {
+			twitterClient = new TwitterClient(this);
+		}
+	}
+
 	private void onAdd() {
 		Story newStory = StoryInput.getStory();
 		if (null != newStory) {
@@ -136,7 +177,7 @@ public class CacheTestDialogue<Key> extends JDialog {
 			}
 			sync();
 		}
-    }
+	}
 
 	private void onRemove() {
 		if (selectedIndex < 0) {
@@ -159,7 +200,7 @@ public class CacheTestDialogue<Key> extends JDialog {
 			showError("Getting from cache", e);
 			return;
 		}
-		JOptionPane.showMessageDialog(null, gotFromCache, "", JOptionPane.PLAIN_MESSAGE);
+		StoryInput.getStory((Story) gotFromCache);
 		sync();
 	}
 

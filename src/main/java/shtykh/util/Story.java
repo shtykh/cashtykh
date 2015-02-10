@@ -14,11 +14,11 @@ public class Story implements Serializable{
 		this.story = story;
 	}
 
-	public String toString() {
-		return title + ": " + story;
-	}
-
 	public String getTitle() {
 		return title;
+	}
+
+	public String toString() {
+		return story;
 	}
 }

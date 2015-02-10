@@ -57,6 +57,13 @@ public class StoryInput extends JDialog {
 		return dialog.getAnswer();
 	}
 
+	public static Story getStory(Story gotFromCache) {
+		StoryInput dialog = new StoryInput(gotFromCache.getTitle(), gotFromCache.toString());
+		dialog.pack();
+		dialog.setVisible(true);
+		return dialog.getAnswer();
+	}
+
 	private void onOK() {
 		answer = new Story(textField.getText(), textPane.getText());
 		try {
