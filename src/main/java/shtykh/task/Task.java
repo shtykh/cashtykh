@@ -9,9 +9,15 @@ public abstract class Task<Result> extends SwingWorker<Result, String> {
 	
 	private final TaskFrame taskFrame;
 	private final Receiver<Result> receiver;
+	private boolean disposeWhenDone;
 
-	public Task(Receiver<Result> receiver){
+	public Task(Receiver<Result> receiver) {
+		this(receiver, true);
+	}
+
+	public Task(Receiver<Result> receiver, boolean disposeWhenDone){
 		this.receiver = receiver;
+		this.disposeWhenDone = disposeWhenDone;
 		taskFrame = new TaskFrame(this);
 	}
 
@@ -23,8 +29,11 @@ public abstract class Task<Result> extends SwingWorker<Result, String> {
 			receiver.onReceive(result);
 		}catch(Exception e){
 			JOptionPane.showMessageDialog(taskFrame,
-					"Error", "Search",
+					e.getMessage(), this.getClass().getSimpleName(),
 					JOptionPane.ERROR_MESSAGE);
+		}
+		if (disposeWhenDone) {
+			taskFrame.dispose();
 		}
 	}
 

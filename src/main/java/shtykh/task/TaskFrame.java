@@ -21,7 +21,7 @@ public class TaskFrame<Result> extends JFrame implements Informable {
 		label = new JLabel("");
 		add(label, BorderLayout.NORTH);
 
-		textArea = new JTextArea(40, 30);
+		textArea = new JTextArea(20, 30);
 		add(new JScrollPane(textArea), BorderLayout.CENTER);
 
 		progressBar = new JProgressBar();
