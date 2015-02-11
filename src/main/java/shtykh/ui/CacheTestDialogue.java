@@ -25,7 +25,7 @@ public class CacheTestDialogue<Key> extends JFrame implements Receiver<Tweets> {
     private JPanel contentPane;
     private JButton buttonAdd;
 	private JButton buttonRemove;
-	private JButton buttonGet;
+	private JButton buttonEdit;
     private JButton buttonDiscover;
 	private JList list0;
 	private JList list1;
@@ -90,7 +90,7 @@ public class CacheTestDialogue<Key> extends JFrame implements Receiver<Tweets> {
 
 		buttonAdd.addActionListener(e -> onAdd());
 		buttonLoad.addActionListener(e -> onLoad());
-		buttonGet.addActionListener(e -> onGet());
+		buttonEdit.addActionListener(e -> onEdit());
 		buttonRemove.addActionListener(e -> onRemove());
 		buttonDiscover.addActionListener(e -> onDiscover());
 	}
@@ -190,16 +190,16 @@ public class CacheTestDialogue<Key> extends JFrame implements Receiver<Tweets> {
 		sync();
 	}
 
-	private void onGet() {
+	private void onEdit() {
 		Serializable gotFromCache = null;
 		try {
-			gotFromCache = cache.get(getSelectedKey());
+			gotFromCache = cache.remove(getSelectedKey());
 		} catch (IOException e) {
 			showError("Getting from cache", e, this);
 			return;
 		}
-		StoryInput.getStory((Story) gotFromCache);
-		sync();
+		Story storyEdited = StoryInput.getStory((Story) gotFromCache);
+		add(storyEdited);
 	}
 
 	private Key getSelectedKey() {
