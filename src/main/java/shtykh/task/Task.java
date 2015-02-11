@@ -14,10 +14,10 @@ public abstract class Task<Result> extends SwingWorker<Result, String> {
 	private boolean disposeWhenDone;
 
 	public Task(Receiver<Result> receiver) {
-		this(receiver, true);
+		this(receiver, true, true);
 	}
 
-	public Task(Receiver<Result> receiver, boolean disposeWhenDone){
+	public Task(Receiver<Result> receiver, boolean disposeWhenDone, boolean visible){
 		this.receiver = receiver;
 		this.disposeWhenDone = disposeWhenDone;
 		taskFrame = new TaskFrame(this);
@@ -39,6 +39,10 @@ public abstract class Task<Result> extends SwingWorker<Result, String> {
 
 	@Override
 	protected abstract Result doInBackground() throws Exception;
+
+	public Receiver<Result> getReceiver() {
+		return receiver;
+	}
 
 	@Override
 	protected void process(List<String> chunks){

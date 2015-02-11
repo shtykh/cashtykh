@@ -12,7 +12,11 @@ public class SearchTweets extends Task<Tweets> {
 	private final int twitsCount;
 
 	public SearchTweets(TwitterClient client, Receiver<Tweets> receiver, String query, int twitsCount) {
-		super(receiver);
+		this(client, receiver, query, twitsCount, true);
+	}
+
+	public SearchTweets(TwitterClient client, Receiver<Tweets> receiver, String query, int twitsCount, boolean visible) {
+		super(receiver, true, visible);
 		this.client = client;
 		this.querry = query;
 		this.twitsCount = twitsCount;
@@ -20,7 +24,7 @@ public class SearchTweets extends Task<Tweets> {
 
 	@Override
 	protected Tweets doInBackground() throws Exception {
-		publish("Searching tweets by query : " + querry);
+		publish("Searching " + twitsCount + " tweets by query : " + querry);
 		setProgress(1);
 		Tweets tweets = client.searchTweets(querry, twitsCount);
 		setProgress(100);

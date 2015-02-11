@@ -112,7 +112,7 @@ public class OneLevelCache<Key, Value extends Serializable> implements IOneLevel
 	}
 
 	@Override
-	public Iterator<Key> keyIterator() {
+	public Iterator<Key> iterator() {
 		return keys.iterator();
 	}
 

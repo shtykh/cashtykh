@@ -71,6 +71,23 @@ public class TwoLevelCache<Key, Value extends Serializable> implements IMultiLev
 	}
 
 	@Override
+	public Iterator<Key> iterator() {
+		return new Iterator<Key>() {
+			private Iterator<Key> iterator0 = levels[0].iterator();
+			private Iterator<Key> iterator1 = levels[1].iterator();
+			@Override
+			public boolean hasNext() {
+				return iterator0.hasNext() || iterator1.hasNext();
+			}
+
+			@Override
+			public Key next() {
+				return iterator0.hasNext() ? iterator0.next() : iterator1.next();
+			}
+		};
+	}
+
+	@Override
 	public boolean isLastOnTop() {
 		return lastOnTop;
 	}
@@ -95,7 +112,7 @@ public class TwoLevelCache<Key, Value extends Serializable> implements IMultiLev
 
 	@Override
 	public Iterator<Key> keyIteratorOfLevel(int level) {
-		return levels[level].keyIterator();
+		return levels[level].iterator();
 	}
 	@Override
 	public int getCapacityOfLevel(int level) {

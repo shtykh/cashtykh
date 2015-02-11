@@ -8,7 +8,7 @@ import java.io.Serializable;
 /**
  * Created by shtykh on 06/02/15.
  */
-public interface ICache<Key, Value extends Serializable> extends Storage<Key, Value> {
+public interface ICache<Key, Value extends Serializable> extends Storage<Key, Value>, Iterable<Key> {
 	public default Value get(Key key) throws IOException {
 		if (isLastOnTop()) {
 			Value value = remove(key);

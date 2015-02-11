@@ -4,6 +4,7 @@ import org.json.JSONException;
 import shtykh.storage.cache.IMultiLevelCache;
 import shtykh.storage.cache.TwoLevelCache;
 import shtykh.task.Receiver;
+import shtykh.tweets.Discover;
 import shtykh.tweets.SearchTweets;
 import shtykh.tweets.Tweets;
 import shtykh.tweets.TwitterClient;
@@ -145,8 +146,7 @@ public class CacheTestDialogue<Key> extends JFrame implements Receiver<Tweets> {
 		}
 		String query = StringInput.getString();
 		if (null != query) {
-			SearchTweets searchTweets = new SearchTweets(twitterClient, this, query, tweetCountSlider.getValue());
-			searchTweets.start();
+			new SearchTweets(twitterClient, this, query, tweetCountSlider.getValue()).start();
 		}
 	}
 
@@ -157,7 +157,7 @@ public class CacheTestDialogue<Key> extends JFrame implements Receiver<Tweets> {
 	}
 
 	private void onDiscover() {
-		showError("Not implemented yet", new Exception("Sorry, this feature is not implemented yet"), this);
+		new Discover(twitterClient, this, cache, 40, tweetCountSlider.getValue()).start();
 	}
 
 	private void onAdd() {
