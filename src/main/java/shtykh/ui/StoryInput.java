@@ -69,7 +69,7 @@ public class StoryInput extends JDialog {
 		try {
 			checkAnswer(answer);
 		} catch (Exception e) {
-			showError("Story is not OK!", e);
+			showError("Story is not OK!", e, this);
 			return;
 		}
 		dispose();

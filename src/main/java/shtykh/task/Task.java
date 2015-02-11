@@ -1,4 +1,6 @@
 package shtykh.task;
+import shtykh.ui.UiUtil;
+
 import javax.swing.*;
 import java.util.List;
 
@@ -28,9 +30,7 @@ public abstract class Task<Result> extends SwingWorker<Result, String> {
 			taskFrame.setResult(result);
 			receiver.onReceive(result);
 		}catch(Exception e){
-			JOptionPane.showMessageDialog(taskFrame,
-					e.getMessage(), this.getClass().getSimpleName(),
-					JOptionPane.ERROR_MESSAGE);
+			UiUtil.showError(this.getClass().getSimpleName(), e, taskFrame);
 		}
 		if (disposeWhenDone) {
 			taskFrame.dispose();

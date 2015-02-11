@@ -140,7 +140,7 @@ public class CacheTestDialogue<Key> extends JFrame implements Receiver<Tweets> {
 		try {
 			checkTwitterClient();
 		} catch (JSONException | IOException e) {
-			showError("Your authorization data is broken!", e);
+			showError("Your authorization data is broken!", e, this);
 			return;
 		}
 		String query = StringInput.getString();
@@ -157,7 +157,7 @@ public class CacheTestDialogue<Key> extends JFrame implements Receiver<Tweets> {
 	}
 
 	private void onDiscover() {
-		showError("Not implemented yet", new Exception("Sorry, this feature is not implemented yet"));
+		showError("Not implemented yet", new Exception("Sorry, this feature is not implemented yet"), this);
 	}
 
 	private void onAdd() {
@@ -170,7 +170,7 @@ public class CacheTestDialogue<Key> extends JFrame implements Receiver<Tweets> {
 			try {
 				cache.put(newStory.getTitle(), newStory);
 			} catch (IOException e) {
-				showError("Adding to cache", e);
+				showError("Adding to cache", e, this);
 				return;
 			}
 			sync();
@@ -184,7 +184,7 @@ public class CacheTestDialogue<Key> extends JFrame implements Receiver<Tweets> {
 		try {
 			cache.remove(getSelectedKey());
 		} catch (IOException e) {
-			showError("Removing from cache", e);
+			showError("Removing from cache", e, this);
 			return;
 		}
 		sync();
@@ -195,7 +195,7 @@ public class CacheTestDialogue<Key> extends JFrame implements Receiver<Tweets> {
 		try {
 			gotFromCache = cache.get(getSelectedKey());
 		} catch (IOException e) {
-			showError("Getting from cache", e);
+			showError("Getting from cache", e, this);
 			return;
 		}
 		StoryInput.getStory((Story) gotFromCache);
@@ -212,7 +212,7 @@ public class CacheTestDialogue<Key> extends JFrame implements Receiver<Tweets> {
 		try {
 			cache.clear();
 		} catch (IOException e) {
-			showError("Clearing cache", e);
+			showError("Clearing cache", e, this);
 		}
 		dispose();
 		System.exit(0);
