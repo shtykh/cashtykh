@@ -1,11 +1,13 @@
 package shtykh.ui;
 
-import oauth.signpost.exception.OAuthException;
 import org.json.JSONException;
 import shtykh.storage.cache.IMultiLevelCache;
 import shtykh.storage.cache.TwoLevelCache;
-import shtykh.util.Story;
+import shtykh.task.Receiver;
+import shtykh.tweets.SearchTweets;
+import shtykh.tweets.Tweets;
 import shtykh.tweets.TwitterClient;
+import shtykh.util.Story;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
@@ -19,12 +21,12 @@ import java.util.Iterator;
 
 import static shtykh.ui.UiUtil.showError;
 
-public class CacheTestDialogue<Key> extends JDialog {
+public class CacheTestDialogue<Key> extends JFrame implements Receiver<Tweets> {
     private JPanel contentPane;
     private JButton buttonAdd;
 	private JButton buttonRemove;
 	private JButton buttonGet;
-    private JButton buttonCancel;
+    private JButton buttonDiscover;
 	private JList list0;
 	private JList list1;
 	private JSpinner spinner0;
@@ -42,8 +44,8 @@ public class CacheTestDialogue<Key> extends JDialog {
 	public CacheTestDialogue(IMultiLevelCache cache) {
 		this.cache = cache;
 		setContentPane(contentPane);
-        setModal(true);
-		setTitle("Cache test");
+
+		setTitle("Story viewer");
 
 		initSpinner(spinner0, cache.getCapacityOfLevel(0), e -> onSpinnerChanged(spinner0, 0));
 		initSpinner(spinner1, cache.getCapacityOfLevel(1), e -> onSpinnerChanged(spinner1, 1));
@@ -90,7 +92,7 @@ public class CacheTestDialogue<Key> extends JDialog {
 		buttonLoad.addActionListener(e -> onLoad());
 		buttonGet.addActionListener(e -> onGet());
 		buttonRemove.addActionListener(e -> onRemove());
-		buttonCancel.addActionListener(e -> onCancel());
+		buttonDiscover.addActionListener(e -> onDiscover());
 	}
 
 	private void initSpinner(JSpinner spinner, int capacity, ChangeListener changeListener) {
@@ -143,20 +145,8 @@ public class CacheTestDialogue<Key> extends JDialog {
 		}
 		String query = StringInput.getString();
 		if (null != query) {
-			try {
-				Story tweets = twitterClient.searchTweets(query, tweetCountSlider.getValue());
-				cache.put(query, tweets);
-			} catch (OAuthException e) {
-				showError("Authorization failed", e);
-				return;
-			} catch (IOException e) {
-				showError("Adding to cache", e);
-				return;
-			} catch (JSONException e) {
-				showError("Tweet parsing failed", e);
-				e.printStackTrace();
-			}
-			sync();
+			SearchTweets searchTweets = new SearchTweets(twitterClient, this, query, tweetCountSlider.getValue());
+			searchTweets.start();
 		}
 	}
 
@@ -166,8 +156,16 @@ public class CacheTestDialogue<Key> extends JDialog {
 		}
 	}
 
+	private void onDiscover() {
+		showError("Not implemented yet", new Exception("Sorry, this feature is not implemented yet"));
+	}
+
 	private void onAdd() {
 		Story newStory = StoryInput.getStory();
+		add(newStory);
+	}
+
+	private void add(Story newStory) {
 		if (null != newStory) {
 			try {
 				cache.put(newStory.getTitle(), newStory);
@@ -217,5 +215,11 @@ public class CacheTestDialogue<Key> extends JDialog {
 			showError("Clearing cache", e);
 		}
 		dispose();
+		System.exit(0);
     }
+
+	@Override
+	public void onReceive(Tweets tweets) {
+		add(tweets);
+	}
 }

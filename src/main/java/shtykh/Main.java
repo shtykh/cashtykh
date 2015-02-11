@@ -14,6 +14,5 @@ public class Main {
 	public static void main (String[] args) {
 		TwoLevelCache cache = new TwoLevelCache<String, String>(LEVEL_0_CAPACITY, LEVEL_1_CAPACITY, IS_LAST_ON_TOP);
 		CacheTestDialogue.show(cache);
-		System.exit(0);
 	}
 }
