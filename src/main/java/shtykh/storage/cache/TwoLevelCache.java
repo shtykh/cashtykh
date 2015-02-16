@@ -1,6 +1,7 @@
 package shtykh.storage.cache;
 
 import org.apache.commons.lang3.tuple.Pair;
+import shtykh.storage.cache.internal.AbstractCache;
 import shtykh.storage.cache.internal.IOneLevelCache;
 import shtykh.storage.cache.internal.OneLevelCache;
 import shtykh.storage.internal.MemoryStorage;
@@ -15,7 +16,9 @@ import static com.google.common.base.Objects.firstNonNull;
 /**
  * Created by shtykh on 06/02/15.
  */
-public class TwoLevelCache<Key, Value extends Serializable> implements IMultiLevelCache<Key, Value> {
+public class TwoLevelCache<Key, Value extends Serializable> 
+		extends AbstractCache<Key, Value> 
+		implements IMultiLevelCache<Key, Value> {
 
 	private IOneLevelCache<Key, Value>[] levels = new OneLevelCache[2];
 	private boolean lastOnTop = false;
@@ -26,10 +29,10 @@ public class TwoLevelCache<Key, Value extends Serializable> implements IMultiLev
 		setLastOnTop(lastOnTop);
 	}
 
-	// Storage methods
+	// AbstractCache methods
 
 	@Override
-	public Value put(Key key, Value value) throws IOException {
+	protected Value putSync(Key key, Value value) throws IOException {
 		Value toReturn;
 		if (levels[1].containsKey(key)) {
 			toReturn = levels[1].remove(key);
@@ -42,7 +45,7 @@ public class TwoLevelCache<Key, Value extends Serializable> implements IMultiLev
 	}
 
 	@Override
-	public Value remove(Key key) throws IOException {
+	protected Value removeSync(Key key) throws IOException {
 		if (levels[0].containsKey(key)) {
 			Value deleted = levels[0].remove(key);
 			pushUpIfNeeded();
@@ -53,7 +56,7 @@ public class TwoLevelCache<Key, Value extends Serializable> implements IMultiLev
 	}
 
 	@Override
-	public void clear() throws IOException {
+	protected void clearSync() throws IOException {
 		levels[0].clear();
 		levels[1].clear();
 	}
@@ -135,14 +138,14 @@ public class TwoLevelCache<Key, Value extends Serializable> implements IMultiLev
 
 	// private methods
 
-	private void pushUpIfNeeded() throws IOException {
+	private synchronized void pushUpIfNeeded() throws IOException {
 		while (levels[0].size() < levels[0].getCapacity() && levels[1].size() != 0) {
 			Pair<Key, Value> up = levels[1].pollFirst();
 			levels[0].offerLast(up.getLeft(), up.getRight());
 		}
 	}
 
-	private void pushDownIfNeeded() throws IOException {
+	private synchronized void pushDownIfNeeded() throws IOException {
 		while (levels[0].size() > levels[0].getCapacity()) {
 			Pair<Key, Value> down = levels[0].pollLast();
 			levels[1].put(down.getLeft(), down.getRight());

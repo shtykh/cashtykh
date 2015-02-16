@@ -11,7 +11,7 @@ import java.util.*;
 /**
  * Created by shtykh on 06/02/15.
  */
-public class OneLevelCache<Key, Value extends Serializable> implements IOneLevelCache<Key, Value> {
+public class OneLevelCache<Key, Value extends Serializable> extends AbstractOneLevelCache<Key, Value>{
 
 	private final boolean trimToCapacity;
 	private int capacity;
@@ -28,10 +28,10 @@ public class OneLevelCache<Key, Value extends Serializable> implements IOneLevel
 		keys = new LinkedList<>();
 	}
 
-	// Storage methods
+	// AbstractCache methods
 
 	@Override
-	public Value put(Key key, Value value) throws IOException {
+	protected Value putSync(Key key, Value value) throws IOException {
 		keys.remove(key);
 		keys.offerFirst(key);
 		Value put = storage.put(key, value);
@@ -42,18 +42,17 @@ public class OneLevelCache<Key, Value extends Serializable> implements IOneLevel
 	}
 
 	@Override
-	public Value remove(Key key) throws IOException {
+	protected Value removeSync(Key key) throws IOException {
 		if (keys.contains(key)) {
 			keys.remove(key);
-			Value deleted = storage.remove(key);
-			return deleted;
+			return storage.remove(key);
 		} else {
 			return null;
 		}
 	}
 
 	@Override
-	public void clear() throws IOException {
+	public void clearSync() throws IOException {
 		storage.clear();
 	}
 
@@ -91,21 +90,21 @@ public class OneLevelCache<Key, Value extends Serializable> implements IOneLevel
 	// IOneLevelCache methods
 
 	@Override
-	public Value offerLast(Key key, Value value) throws IOException {
+	public Value offerLastSync(Key key, Value value) throws IOException {
 		keys.remove(key);
 		keys.offerLast(key);
 		return storage.put(key, value);
 	}
 
 	@Override
-	public Pair<Key, Value> pollLast() throws IOException {
+	public Pair<Key, Value> pollLastSync() throws IOException {
 		Key key = keys.pollLast();
 		Value value = storage.remove(key);
 		return new ImmutablePair<>(key, value);
 	}
 
 	@Override
-	public Pair<Key, Value> pollFirst() throws IOException {
+	public Pair<Key, Value> pollFirstSync() throws IOException {
 		Key key = keys.pollFirst();
 		Value value = storage.remove(key);
 		return new ImmutablePair<>(key, value);

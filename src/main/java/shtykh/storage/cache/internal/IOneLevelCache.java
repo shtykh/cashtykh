@@ -13,6 +13,8 @@ public interface IOneLevelCache<Key, Value extends Serializable> extends ICache<
 	public void setCapacity(int capacity);
 
 	public Value offerLast(Key key, Value value) throws IOException;
+
 	public Pair<Key, Value> pollLast() throws IOException;
+
 	public Pair<Key, Value> pollFirst() throws IOException;
 }
