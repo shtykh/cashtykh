@@ -2,7 +2,6 @@ package shtykh.ui;
 
 import org.json.JSONException;
 import shtykh.storage.cache.IMultiLevelCache;
-import shtykh.storage.cache.TwoLevelCache;
 import shtykh.task.Receiver;
 import shtykh.tweets.Discover;
 import shtykh.tweets.SearchTweets;
@@ -22,7 +21,7 @@ import java.util.Iterator;
 
 import static shtykh.ui.UiUtil.showError;
 
-public class CacheTestDialogue<Key> extends JFrame implements Receiver<Tweets> {
+public class CacheTestDialogue<Key, Value extends Serializable> extends JFrame implements Receiver<Tweets> {
     private JPanel contentPane;
     private JButton buttonAdd;
 	private JButton buttonRemove;
@@ -42,7 +41,7 @@ public class CacheTestDialogue<Key> extends JFrame implements Receiver<Tweets> {
 	private IMultiLevelCache cache;
 	private TwitterClient twitterClient;
 
-	public CacheTestDialogue(IMultiLevelCache cache) {
+	public CacheTestDialogue(IMultiLevelCache<Key, Value> cache) {
 		this.cache = cache;
 		setContentPane(contentPane);
 
@@ -68,6 +67,7 @@ public class CacheTestDialogue<Key> extends JFrame implements Receiver<Tweets> {
 
 		contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+		sync();
     }
 
 	private void onSpinnerChanged(JSpinner spinner, int level) {
@@ -80,8 +80,8 @@ public class CacheTestDialogue<Key> extends JFrame implements Receiver<Tweets> {
 		}
 	}
 
-	public static void show(TwoLevelCache cache) {
-		CacheTestDialogue dialog = new CacheTestDialogue(cache);
+	public static <Key, Value extends Serializable> void show(IMultiLevelCache<Key, Value> cache) {
+		CacheTestDialogue dialog = new CacheTestDialogue<>(cache);
 		dialog.pack();
 		dialog.setVisible(true);
 	}
@@ -157,6 +157,12 @@ public class CacheTestDialogue<Key> extends JFrame implements Receiver<Tweets> {
 	}
 
 	private void onDiscover() {
+		try {
+			checkTwitterClient();
+		} catch (JSONException | IOException e) {
+			showError("Your authorization data is broken!", e, this);
+			return;
+		}
 		new Discover(twitterClient, this, cache, 40, tweetCountSlider.getValue()).start();
 	}
 
@@ -191,7 +197,7 @@ public class CacheTestDialogue<Key> extends JFrame implements Receiver<Tweets> {
 	}
 
 	private void onEdit() {
-		Serializable gotFromCache = null;
+		Serializable gotFromCache;
 		try {
 			gotFromCache = cache.remove(getSelectedKey());
 		} catch (IOException e) {

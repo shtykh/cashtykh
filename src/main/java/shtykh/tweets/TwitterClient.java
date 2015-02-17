@@ -23,7 +23,7 @@ public class TwitterClient {
 	private OAuthConsumer consumer;
 
 	public TwitterClient(Component parent) throws JSONException, IOException {
-		String authData = null;
+		String authData;
 		try {
 			authData = readFileAsString(System.getProperty("user.dir") + "/auth");
 		} catch (IOException e) {
@@ -49,11 +49,11 @@ public class TwitterClient {
 	}
 
 	private static String readFileAsString(String filePath) throws IOException {
-		StringBuffer fileData = new StringBuffer();
+		StringBuilder fileData = new StringBuilder();
 		BufferedReader reader = new BufferedReader(
 				new FileReader(filePath));
 		char[] buf = new char[1024];
-		int numRead=0;
+		int numRead;
 		while((numRead=reader.read(buf)) != -1){
 			String readData = String.valueOf(buf, 0, numRead);
 			fileData.append(readData);
@@ -72,16 +72,22 @@ public class TwitterClient {
 		consumer.setTokenWithSecret(accessToken, accessSecret);
 	}
 
-	public Tweets searchTweets(String query) throws OAuthException, IOException, JSONException {
-		return searchTweets(query, 15);
-	}
-
-	public Tweets searchTweets(String query, int count) throws OAuthException, IOException, JSONException {
-		HttpGet request = new HttpGet("https://api.twitter.com/1.1/search/tweets.json?q=" + query + "&count=" + count);
+	public Tweets searchTweets(String query, int count) throws OAuthException, IOException, JSONException, TwitterAPIException {
+		String cleanedQuery = cleanQuery(query);
+		HttpGet request = new HttpGet("https://api.twitter.com/1.1/search/tweets.json?q=" + cleanedQuery + "&count=" + count);
 		consumer.sign(request);
 
 		HttpClient client = new DefaultHttpClient();
 		HttpResponse response = client.execute(request);
-		return new Tweets(query, IOUtils.toString(response.getEntity().getContent()));
+		return new Tweets(cleanedQuery.replace("%23", "#"), IOUtils.toString(response.getEntity().getContent()));
+	}
+
+	private String cleanQuery(String query) {
+		String cleaned = query.replace("#", "%23");
+		for (String badSubString : new String[]{
+				"!", "&", ",", ".", "$", "(", ")", "?", "'", "\"", ":", "@", ";", "&amp"}) {
+			cleaned = cleaned.replace(badSubString, "");
+		}
+		return cleaned;
 	}
 }

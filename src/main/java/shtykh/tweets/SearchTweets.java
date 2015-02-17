@@ -1,5 +1,6 @@
 package shtykh.tweets;
 
+import com.sun.istack.internal.NotNull;
 import shtykh.task.Receiver;
 import shtykh.task.Task;
 
@@ -15,7 +16,11 @@ public class SearchTweets extends Task<Tweets> {
 		this(client, receiver, query, twitsCount, true);
 	}
 
-	public SearchTweets(TwitterClient client, Receiver<Tweets> receiver, String query, int twitsCount, boolean visible) {
+	public SearchTweets(@NotNull TwitterClient client, 
+						@NotNull Receiver<Tweets> receiver, 
+						String query, 
+						int twitsCount, 
+						boolean visible) {
 		super(receiver, true, visible);
 		this.client = client;
 		this.querry = query;

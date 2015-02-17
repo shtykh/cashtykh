@@ -12,9 +12,11 @@ public class TaskFrame<Result> extends JFrame implements Informable {
 	private JProgressBar progressBar;
 	private JTextArea textArea;
 	private Task<Result> task;
+	private boolean visible;
 
-	public TaskFrame(Task<Result> task) {
+	public TaskFrame(Task<Result> task, boolean visible) {
 		this.task = task;
+		this.visible = visible;
 	}
 
 	private void initComponents(){
@@ -40,7 +42,7 @@ public class TaskFrame<Result> extends JFrame implements Informable {
 		SwingUtilities.invokeLater(() -> {
 			initComponents();
 			pack();
-			setVisible(true);
+			setVisible(visible);
 			setAlwaysOnTop(true);
 		});
 	}
@@ -52,7 +54,8 @@ public class TaskFrame<Result> extends JFrame implements Informable {
 	}
 
 	public void setResult(Result result) {
-		messageChanged("Result: " + result);
+		String resultString = result == null ? "" : result.toString();
+		messageChanged("Result: " + resultString);
 		textArea.append("Done\n");
 		progressBar.setVisible(false);
 	}

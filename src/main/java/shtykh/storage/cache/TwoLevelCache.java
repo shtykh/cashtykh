@@ -9,7 +9,7 @@ import shtykh.storage.internal.OsStorage;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Iterator;
+import java.util.*;
 
 import static com.google.common.base.Objects.firstNonNull;
 
@@ -85,7 +85,12 @@ public class TwoLevelCache<Key, Value extends Serializable>
 
 			@Override
 			public Key next() {
-				return iterator0.hasNext() ? iterator0.next() : iterator1.next();
+				if (iterator0.hasNext()) {
+					return iterator0.next();
+				}
+				else {
+					return iterator1.next();
+				}
 			}
 		};
 	}
@@ -153,5 +158,12 @@ public class TwoLevelCache<Key, Value extends Serializable>
 		while (levels[1].size() > levels[1].getCapacity()) {
 			levels[1].pollLast();
 		}
+	}
+
+	@Override
+	public Collection<Key> keys() {
+		List<Key> keySet = new LinkedList<>(levels[0].keys());
+		keySet.addAll(levels[1].keys());
+		return keySet;
 	}
 }

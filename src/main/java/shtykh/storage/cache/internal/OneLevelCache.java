@@ -87,6 +87,11 @@ public class OneLevelCache<Key, Value extends Serializable> extends AbstractOneL
 		return keys.contains(key);
 	}
 
+	@Override
+	public Collection<Key> keys() {
+		return keys;
+	}
+
 	// IOneLevelCache methods
 
 	@Override

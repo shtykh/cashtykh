@@ -1,18 +1,24 @@
 package shtykh;
 
-import shtykh.storage.cache.TwoLevelCache;
+import shtykh.storage.cache.IMultiLevelCache;
 import shtykh.ui.CacheTestDialogue;
+import shtykh.ui.UiUtil;
+import shtykh.util.Story;
+import shtykh.util.init.PoliticsInitializer;
+
+import java.io.IOException;
 
 /**
  * Created by shtykh on 06/02/15.
  */
 public class Main {
-	private static final int LEVEL_0_CAPACITY = 2;
-	private static final int LEVEL_1_CAPACITY = 5;
-	private static final boolean IS_LAST_ON_TOP = true;
-
 	public static void main (String[] args) {
-		TwoLevelCache cache = new TwoLevelCache<String, String>(LEVEL_0_CAPACITY, LEVEL_1_CAPACITY, IS_LAST_ON_TOP);
-		CacheTestDialogue.show(cache);
+		IMultiLevelCache<String, Story> cache;
+		try {
+			cache = (IMultiLevelCache<String, Story>) new PoliticsInitializer().get();
+			CacheTestDialogue.show(cache);
+		} catch (IOException e) {
+			UiUtil.showError("Initialization error", e, null);
+		}
 	}
 }

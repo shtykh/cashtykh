@@ -9,11 +9,11 @@ import shtykh.util.Story;
  * Created by shtykh on 10/02/15.
  */
 public class Tweets extends Story {
-	public Tweets(String title, String content) throws JSONException {
-		super(title, getBody(content));
+	public Tweets(String title, String content) throws JSONException, TwitterAPIException {
+		super(title, getBody(title, content));
 	}
 
-	private static String getBody(String content) throws JSONException {
+	private static String getBody(String title, String content) throws JSONException, TwitterAPIException {
 		JSONObject jsonObject = new JSONObject(content);
 		JSONArray statuses;
 		try {
@@ -25,7 +25,7 @@ public class Tweets extends Story {
 			} catch (JSONException ex) {
 				throw couldNotFindStatuses;
 			}
-			throw new JSONException(((JSONObject)errors.get(0)).getString("message"));
+			throw new TwitterAPIException(title + "\n" + errors.get(0).toString());
 		}
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < statuses.length(); i++) {
