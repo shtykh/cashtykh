@@ -39,6 +39,7 @@ public class CacheTestDialogue<Key, Value extends Serializable> extends JFrame i
 	private JSlider iterationNumberSlider;
 	private JLabel size0;
 	private JLabel size1;
+	private JButton seeTrendsButton;
 
 	private boolean isFirstListSelected;
 	private int selectedIndex;
@@ -93,7 +94,8 @@ public class CacheTestDialogue<Key, Value extends Serializable> extends JFrame i
 
 	private void initButtons() {
 		getRootPane().setDefaultButton(buttonAdd);
-
+		
+		buttonAdd.addActionListener(e -> TrendViewer.display());
 		buttonAdd.addActionListener(e -> onAdd());
 		buttonLoad.addActionListener(e -> onLoad());
 		buttonEdit.addActionListener(e -> onEdit());

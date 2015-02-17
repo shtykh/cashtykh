@@ -1,8 +1,10 @@
 package shtykh.storage.cache.internal;
 
+import shtykh.storage.keys.SortedKeySet;
 import shtykh.storage.Storage;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import shtykh.storage.keys.Histogram;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -17,7 +19,7 @@ public class OneLevelCache<Key, Value extends Serializable> extends AbstractOneL
 	private int capacity;
 
 	private Storage<Key, Value> storage;
-	private LinkedList<Key> keys;
+	private SortedKeySet<Key> keys;
 
 	private boolean lastOnTop = false;
 
@@ -25,14 +27,13 @@ public class OneLevelCache<Key, Value extends Serializable> extends AbstractOneL
 		this.capacity = capacity;
 		this.trimToCapacity = trimToCapacity;
 		this.storage = storage;
-		keys = new LinkedList<>();
+		keys = new Histogram<>();
 	}
 
 	// AbstractCache methods
 
 	@Override
 	protected Value putSync(Key key, Value value) throws IOException {
-		keys.remove(key);
 		keys.offerFirst(key);
 		Value put = storage.put(key, value);
 		if (trimToCapacity && size() > capacity) {
@@ -53,6 +54,7 @@ public class OneLevelCache<Key, Value extends Serializable> extends AbstractOneL
 
 	@Override
 	public void clearSync() throws IOException {
+		keys().clear();
 		storage.clear();
 	}
 
@@ -89,14 +91,13 @@ public class OneLevelCache<Key, Value extends Serializable> extends AbstractOneL
 
 	@Override
 	public Collection<Key> keys() {
-		return keys;
+		return keys.toSortedList();
 	}
 
 	// IOneLevelCache methods
 
 	@Override
 	public Value offerLastSync(Key key, Value value) throws IOException {
-		keys.remove(key);
 		keys.offerLast(key);
 		return storage.put(key, value);
 	}

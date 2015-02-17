@@ -9,7 +9,10 @@ import shtykh.storage.internal.OsStorage;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import static com.google.common.base.Objects.firstNonNull;
 
@@ -22,6 +25,7 @@ public class TwoLevelCache<Key, Value extends Serializable>
 
 	private IOneLevelCache<Key, Value>[] levels = new OneLevelCache[2];
 	private boolean lastOnTop = false;
+	private Key lastKeyOnTopLevel;
 
 	public TwoLevelCache(int level0Capacity, int level1Capacity, boolean lastOnTop) {
 		levels[0] = new OneLevelCache<>(level0Capacity, false, new MemoryStorage<>());
@@ -57,6 +61,7 @@ public class TwoLevelCache<Key, Value extends Serializable>
 
 	@Override
 	protected void clearSync() throws IOException {
+		keys().clear();
 		levels[0].clear();
 		levels[1].clear();
 	}

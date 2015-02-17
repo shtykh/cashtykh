@@ -1,7 +1,7 @@
 package shtykh.tweets;
 
 import shtykh.storage.cache.ICache;
-import shtykh.util.Histogram;
+import shtykh.storage.keys.Histogram;
 import shtykh.util.Story;
 
 import java.io.IOException;
@@ -23,6 +23,6 @@ public class StoryEngine {
 				}
 			}
 		}
-		return hashtags.getNMostFrequent(queryCount);
+		return hashtags.getNFirst(queryCount);
 	}
 }
