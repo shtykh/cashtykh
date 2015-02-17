@@ -1,5 +1,7 @@
 # cashtykh
 
+Project consists of configurable two-level cache and small application to test its functionality.
+
 The application allows user to add/edit/remove/load_from_twitter stories and to discover new stories by hashtags that may be found in the existing ones. Story is a text and its title which is unique within the cache.
 
 # ( add | edit | remove ) story & edit cache capacity
