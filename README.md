@@ -1,8 +1,15 @@
 # cashtykh
 
-The application allows user to add/edit/remove/load from twitter stories and to discover new stories by hashtags that may be found in the existing ones.
+The application allows user to add/edit/remove/load_from_twitter stories and to discover new stories by hashtags that may be found in the existing ones. Story is a text and its title which is unique within the cache.
 
-#Note:
+# ( add | edit | remove ) story & edit cache capacity
+These actions are available via UI (edit story or its title as text in text editors, change cache capacity via spinners) without authorization in twitter.
+
+# load story from twitter | discover stories using existing hashtags
+You may write a search query to find some tweets (number of tweets to find might be set via slider next to the load button) and save them as a story. Or you may launch automatic search that will use all hashtags that could be found in stories stored in the cache.
+
+
+#note:
 One can not simply load tweets via twitter API.
 To do that you should create a json file like this:
 
@@ -13,7 +20,6 @@ To do that you should create a json file like this:
   "accessSecret": "blablabla4" <br/>
 }
 
-then name it "auth" and put it to project folder.
-Otherwise you will be asked to peek the file or (if your file is not good enough) simply won't be allowed to work with twiter from the app.
+Then name it "auth" and put it to project folder, otherwise you will be asked to peek the file or (if your file is not good enough) you won't be allowed to work with twiter through the app.
 
 To get credentials you have to create your twitter app here (https://apps.twitter.com/)
