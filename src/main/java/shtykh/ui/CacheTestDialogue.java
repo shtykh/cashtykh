@@ -218,7 +218,7 @@ public class CacheTestDialogue<Key, Value extends Serializable> extends JFrame i
 	private Key getSelectedKey() {
 		JList list = isFirstListSelected ? list0 : list1;
 		ListModel<Key> listModel = list.getModel();
-		return listModel.getElementAt(selectedIndex);
+		return selectedIndex >= 0 ? listModel.getElementAt(selectedIndex) : null;
 	}
 
 	private void onCancel() {
