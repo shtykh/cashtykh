@@ -20,24 +20,27 @@ public class Discover extends Task<Tweets> implements Receiver<Tweets> {
 	private int queryCount;
 
 	private final int twitsInQuery;
+	private final int iterations;
 	private AtomicInteger jobsDoneCount = new AtomicInteger(0);
 
-	public Discover(@NotNull TwitterClient client, 
-					Receiver<Tweets> receiver, 
+	public Discover(@NotNull TwitterClient client,
+					Receiver<Tweets> receiver,
 					@NotNull ICache<String, Story> storyCache,
-					int queryCount, 
-					int twitsInQuery) {
+					int queryCount,
+					int twitsInQuery, 
+					int iterations) {
 		super(receiver, false, true);
 		this.client = client;
 		this.storyCache = storyCache;
 		this.queryCount = queryCount;
 		this.twitsInQuery = twitsInQuery;
+		this.iterations = iterations;
 	}
 
 	@Override
 	protected Tweets doInBackground() throws Exception {
 		publish("Discovering tweets");
-		for (int iteration = 0; iteration < 10; iteration ++) {
+		for (int iteration = 0; iteration < iterations; iteration ++) {
 			jobsDoneCount.set(0);
 			publish("Iteration " + iteration);
 			publish("Searching for hashtags...");

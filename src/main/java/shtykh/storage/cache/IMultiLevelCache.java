@@ -10,4 +10,6 @@ public interface IMultiLevelCache<Key, Value extends Serializable> extends ICach
 	public Iterator<Key> keyIteratorOfLevel(int level);
 	public int getCapacityOfLevel(int level);
 	public void setCapacityOfLevel(int level, int capacity);
+
+	public int getSizeOfLevel(int level);
 }

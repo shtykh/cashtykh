@@ -141,6 +141,11 @@ public class TwoLevelCache<Key, Value extends Serializable>
 		}
 	}
 
+	@Override
+	public int getSizeOfLevel(int level) {
+		return levels[level].size();
+	}
+
 	// private methods
 
 	private synchronized void pushUpIfNeeded() throws IOException {

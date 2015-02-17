@@ -10,8 +10,10 @@ import shtykh.tweets.TwitterClient;
 import shtykh.util.Story;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.DefaultFormatter;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -34,6 +36,9 @@ public class CacheTestDialogue<Key, Value extends Serializable> extends JFrame i
 	private JCheckBox lastOnTop;
 	private JButton buttonLoad;
 	private JSlider tweetCountSlider;
+	private JSlider iterationNumberSlider;
+	private JLabel size0;
+	private JLabel size1;
 
 	private boolean isFirstListSelected;
 	private int selectedIndex;
@@ -50,8 +55,8 @@ public class CacheTestDialogue<Key, Value extends Serializable> extends JFrame i
 		initSpinner(spinner0, cache.getCapacityOfLevel(0), e -> onSpinnerChanged(spinner0, 0));
 		initSpinner(spinner1, cache.getCapacityOfLevel(1), e -> onSpinnerChanged(spinner1, 1));
 
-		initList(list0);
-		initList(list1);
+		initList(list0, spinner0);
+		initList(list1, spinner1);
 
 		initButtons();
 
@@ -105,22 +110,24 @@ public class CacheTestDialogue<Key, Value extends Serializable> extends JFrame i
 		spinner.addChangeListener(changeListener);
 	}
 
-	private void initList(JList jList) {
+	private void initList(JList jList, JSpinner capacitySpinner) {
+		jList.setCellRenderer(new MyListCellRenderer(capacitySpinner));
 		jList.addListSelectionListener(e -> onSelectionChanged(jList == list0, jList));
 		jList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		jList.setModel(new DefaultListModel<Key>());
 	}
 
 	private void sync() {
-		sync(cache, list0, 0);
-		sync(cache, list1, 1);
+		sync(cache, list0, size0, 0);
+		sync(cache, list1, size1, 1);
 	}
 
-	private void sync(IMultiLevelCache cache, JList list, int level) {
+	private void sync(IMultiLevelCache cache, JList list, JLabel sizeLabel, int level) {
 		DefaultListModel listModel = (DefaultListModel) list.getModel();
 		listModel.clear();
 		Iterator keyIterator = cache.keyIteratorOfLevel(level);
 		keyIterator.forEachRemaining(obj -> listModel.addElement(obj));
+		sizeLabel.setText(String.valueOf(cache.getSizeOfLevel(level)));
 	}
 
 	private void onLastSeenOnTopChanged() {
@@ -163,7 +170,7 @@ public class CacheTestDialogue<Key, Value extends Serializable> extends JFrame i
 			showError("Your authorization data is broken!", e, this);
 			return;
 		}
-		new Discover(twitterClient, this, cache, 40, tweetCountSlider.getValue()).start();
+		new Discover(twitterClient, this, cache, 40, tweetCountSlider.getValue(), iterationNumberSlider.getValue()).start();
 	}
 
 	private void onAdd() {
@@ -227,5 +234,42 @@ public class CacheTestDialogue<Key, Value extends Serializable> extends JFrame i
 	@Override
 	public void onReceive(Tweets tweets) {
 		add(tweets);
+	}
+
+	private static class MyListCellRenderer implements ListCellRenderer{
+
+		private final JLabel jlblCell = new JLabel(" ", JLabel.LEFT);
+		private final JSpinner capacitySpinner;
+		Border selectedBorder = BorderFactory.createLineBorder(Color.BLACK, 2);
+		Border emptyBorder = BorderFactory.createMatteBorder(0, 1, 1, 1, Color.GRAY);
+		Border lastSelectedBorder = BorderFactory.createMatteBorder(2, 2, 5, 2, Color.BLACK);
+		Border lastEmptyBorder = BorderFactory.createMatteBorder(0, 1, 5, 1, Color.GRAY);
+
+		public MyListCellRenderer(JSpinner capacitySpinner) {
+			super();
+			this.capacitySpinner = capacitySpinner;
+		}
+
+		@Override
+		public Component getListCellRendererComponent(JList jList, Object value,
+													  int index, boolean isSelected, boolean cellHasFocus) {
+
+			jlblCell.setOpaque(true);
+			jlblCell.setText(value.toString());
+			if (isSelected) {
+				jlblCell.setForeground(Color.WHITE);
+				jlblCell.setBackground(jList.getSelectionBackground());
+			} else {
+				jlblCell.setForeground(Color.BLACK);
+				jlblCell.setBackground(jList.getBackground());
+			}
+			boolean isLast = index == ((int)capacitySpinner.getValue()) - 1;
+			Border border = cellHasFocus ? 
+					(isLast ? lastSelectedBorder : selectedBorder) : 
+					(isLast ? lastEmptyBorder : emptyBorder);
+			jlblCell.setBorder(border);
+
+			return jlblCell;
+		}
 	}
 }
