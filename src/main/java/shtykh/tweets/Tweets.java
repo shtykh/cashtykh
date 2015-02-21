@@ -3,14 +3,15 @@ package shtykh.tweets;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import shtykh.tweets.tag.Tag;
 import shtykh.util.Story;
 
 /**
  * Created by shtykh on 10/02/15.
  */
 public class Tweets extends Story {
-	public Tweets(String title, String content) throws JSONException, TwitterAPIException {
-		super(title, getBody(title, content));
+	public Tweets(Tag tag, String content) throws JSONException, TwitterAPIException {
+		super(tag.getText(), getBody(tag.getText(), content));
 	}
 
 	private static String getBody(String title, String content) throws JSONException, TwitterAPIException {

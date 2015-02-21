@@ -4,6 +4,7 @@ import com.sun.istack.internal.NotNull;
 import shtykh.storage.cache.ICache;
 import shtykh.task.Receiver;
 import shtykh.task.Task;
+import shtykh.tweets.tag.Tag;
 import shtykh.util.Story;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public class Discover extends Task<Tweets> implements Receiver<Tweets> {
 	private static final int PERCENTS_TO_FIND_HASH_TAGS = 30;
 	
 	private final TwitterClient client;
-	private final ICache<String, Story> storyCache;
+	private final ICache<Tag, Story> storyCache;
 	private int queryCount;
 
 	private final int twitsInQuery;
@@ -25,7 +26,7 @@ public class Discover extends Task<Tweets> implements Receiver<Tweets> {
 
 	public Discover(@NotNull TwitterClient client,
 					Receiver<Tweets> receiver,
-					@NotNull ICache<String, Story> storyCache,
+					@NotNull ICache<Tag, Story> storyCache,
 					int queryCount,
 					int twitsInQuery, 
 					int iterations) {
@@ -40,20 +41,20 @@ public class Discover extends Task<Tweets> implements Receiver<Tweets> {
 	@Override
 	protected Tweets doInBackground() throws Exception {
 		publish("Discovering tweets");
-		for (int iteration = 0; iteration < iterations; iteration ++) {
+		for (int iteration = 0; iteration < iterations; iteration++) {
 			jobsDoneCount.set(0);
-			publish("Iteration " + iteration);
+			publish("Iteration " + (iteration + 1) + "/" + iterations);
 			publish("Searching for hashtags...");
 			setProgress(1);
-			List<String> hashTags = StoryEngine.getHashTags(storyCache, queryCount);
+			List<Tag> hashTags = StoryEngine.getHashTags(storyCache, queryCount);
 			publish("Hashtags found:");
-			for (String word: hashTags) {
-				publish(word);
+			for (Tag word : hashTags) {
+				publish(word.toFullString());
 			}
 			queryCount = Math.min(hashTags.size(), queryCount);
 			setProgress(PERCENTS_TO_FIND_HASH_TAGS);
 			for (int i = 0; i < queryCount; i++) {
-				String hashTag = hashTags.get(i);
+				Tag hashTag = hashTags.get(i);
 				if (storyCache.containsKey(hashTag)) {
 					setJobDone(hashTag + " was skipped");
 				} else {
@@ -63,7 +64,7 @@ public class Discover extends Task<Tweets> implements Receiver<Tweets> {
 			}
 			while (jobsDoneCount.get() < queryCount) {
 				Thread.sleep(1000);
-			}	
+			}
 		}
 		return null;
 	}

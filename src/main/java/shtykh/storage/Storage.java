@@ -1,5 +1,7 @@
 package shtykh.storage;
 
+import shtykh.tweets.tag.IKey;
+
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -11,4 +13,5 @@ public interface Storage<Key, Value extends Serializable> {
 	public Value put(Key key, Value value) throws IOException;
 	public Value remove(Key key) throws IOException;
 	public void clear() throws IOException;
+	
 }

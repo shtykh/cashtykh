@@ -10,6 +10,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
+import shtykh.tweets.tag.Tag;
 
 import javax.swing.*;
 import java.awt.*;
@@ -72,22 +73,13 @@ public class TwitterClient {
 		consumer.setTokenWithSecret(accessToken, accessSecret);
 	}
 
-	public Tweets searchTweets(String query, int count) throws OAuthException, IOException, JSONException, TwitterAPIException {
-		String cleanedQuery = cleanQuery(query);
+	public Tweets searchTweets(Tag query, int count) throws OAuthException, IOException, JSONException, TwitterAPIException {
+		String cleanedQuery = query.getText().replace("#", "%23");
 		HttpGet request = new HttpGet("https://api.twitter.com/1.1/search/tweets.json?q=" + cleanedQuery + "&count=" + count);
 		consumer.sign(request);
 
 		HttpClient client = new DefaultHttpClient();
 		HttpResponse response = client.execute(request);
-		return new Tweets(cleanedQuery.replace("%23", "#"), IOUtils.toString(response.getEntity().getContent()));
-	}
-
-	private String cleanQuery(String query) {
-		String cleaned = query.replace("#", "%23");
-		for (String badSubString : new String[]{
-				"!", "&", ",", ".", "$", "(", ")", "?", "'", "\"", ":", "@", ";", "&amp"}) {
-			cleaned = cleaned.replace(badSubString, "");
-		}
-		return cleaned;
+		return new Tweets(query, IOUtils.toString(response.getEntity().getContent()));
 	}
 }

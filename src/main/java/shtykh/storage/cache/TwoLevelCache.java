@@ -6,17 +6,21 @@ import shtykh.storage.cache.internal.IOneLevelCache;
 import shtykh.storage.cache.internal.OneLevelCache;
 import shtykh.storage.internal.MemoryStorage;
 import shtykh.storage.internal.OsStorage;
+import shtykh.tweets.tag.IKey;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import static com.google.common.base.Objects.firstNonNull;
 
 /**
  * Created by shtykh on 06/02/15.
  */
-public class TwoLevelCache<Key, Value extends Serializable> 
+public class TwoLevelCache<Key, Value extends Serializable>
 		extends AbstractCache<Key, Value> 
 		implements IMultiLevelCache<Key, Value> {
 
@@ -70,7 +74,13 @@ public class TwoLevelCache<Key, Value extends Serializable>
 
 	@Override
 	public Value getAndDoNotPutOnTop(Key key) throws IOException {
-		return firstNonNull(levels[0].getAndDoNotPutOnTop(key), levels[1].getAndDoNotPutOnTop(key));
+		Value value;
+		try{
+			value = firstNonNull(levels[0].getAndDoNotPutOnTop(key), levels[1].getAndDoNotPutOnTop(key));
+		} catch (NullPointerException e) {
+			return null;
+		}
+		return value;
 	}
 
 	@Override

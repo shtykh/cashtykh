@@ -58,7 +58,7 @@ public class StoryInput extends JDialog {
 	}
 
 	public static Story getStory(Story gotFromCache) {
-		StoryInput dialog = new StoryInput(gotFromCache.getTitle(), gotFromCache.toString());
+		StoryInput dialog = new StoryInput(gotFromCache.getTitle(), gotFromCache.getStory());
 		dialog.pack();
 		dialog.setVisible(true);
 		return dialog.getAnswer();

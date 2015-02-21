@@ -8,7 +8,7 @@ import java.io.Serializable;
 /**
  * Created by shtykh on 16/02/15.
  */
-public abstract class AbstractOneLevelCache<Key, Value extends Serializable> 
+public abstract class AbstractOneLevelCache<Key, Value extends Serializable>
 		extends AbstractCache<Key, Value> 
 		implements IOneLevelCache<Key, Value> {
 	

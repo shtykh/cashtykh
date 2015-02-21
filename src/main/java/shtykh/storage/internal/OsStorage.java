@@ -2,6 +2,7 @@ package shtykh.storage.internal;
 
 import org.apache.commons.io.FileUtils;
 import shtykh.storage.Storage;
+import shtykh.tweets.tag.IKey;
 import shtykh.util.Serializer;
 
 import java.io.File;
@@ -18,8 +19,12 @@ import java.util.Date;
  */
 public class OsStorage<Key, Value extends Serializable> implements Storage<Key, Value> {
 	private static String directory = System.getProperty("user.dir") + "/cash_" + (new Date()).toString().replaceAll(":", "_");
-	static {
-		(new File(directory)).mkdirs();
+	
+	private void ensureDirectoryExists(){
+		File file = new File(directory);
+		if (!file.isDirectory()) {
+			file.mkdirs();
+		}
 	}
 
 	private static <Key> String getFileName(Key key) {
@@ -31,6 +36,7 @@ public class OsStorage<Key, Value extends Serializable> implements Storage<Key, 
 
 	@Override
 	public Value get(Key key) throws IOException {
+		ensureDirectoryExists();
 		Value value;
 		try {
 			value = (Value) Serializer.deserialize(getFileName(key));
@@ -44,6 +50,7 @@ public class OsStorage<Key, Value extends Serializable> implements Storage<Key, 
 
 	@Override
 	public Value put(Key key, Value value) throws IOException {
+		ensureDirectoryExists();
 		Value deserialized = remove(key);
 		Serializer.serialize(getFileName(key), value);
 		return deserialized;
@@ -51,6 +58,7 @@ public class OsStorage<Key, Value extends Serializable> implements Storage<Key, 
 
 	@Override
 	public Value remove(Key key) throws IOException {
+		ensureDirectoryExists();
 		Value value = get(key);
 		Files.deleteIfExists(getPath(key));
 		return value;

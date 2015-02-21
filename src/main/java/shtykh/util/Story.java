@@ -7,11 +7,16 @@ import java.io.Serializable;
  */
 public class Story implements Serializable{
 	private final String title;
+
 	private final String story;
 
 	public Story(String title, String story) {
 		this.title = title;
 		this.story = story;
+	}
+
+	public String getStory() {
+		return story;
 	}
 
 	public String getTitle() {

@@ -2,17 +2,17 @@ package shtykh.util;
 
 import java.util.*;
 
-import static java.lang.Math.*;
+import static java.lang.Math.signum;
 
 /**
  * Created by shtykh on 17/02/15.
  */
-public class Histogram<Value>{
-	private Map<Value, Integer> frequency = new HashMap<>();
-	private Comparator<? super Value> frequencyComparator = 
+public class Histogram<Key>{
+	private Map<Key, Integer> frequency = new HashMap<>();
+	private Comparator<? super Key> frequencyComparator =
 			(o1, o2) -> (int)signum(frequency.get(o2) - frequency.get(o1));
 
-	public void add(Value v) {
+	public void add(Key v) {
 		if (!frequency.containsKey(v)) {
 			frequency.put(v, 1);
 			return;
@@ -21,12 +21,20 @@ public class Histogram<Value>{
 		}
 	}
 	
-	public List<Value> getNMostFrequent(int n) {
-		List<Value> values = new ArrayList<>(frequency.keySet());
-		Collections.sort(values, frequencyComparator);
-		if (values.size() > n) {
-			values = values.subList(0, n - 1);
+	public List<Key> getNMostFrequent(int n) {
+		List<Key> keys = new ArrayList<>(frequency.keySet());
+		Collections.sort(keys, frequencyComparator);
+		if (keys.size() > n) {
+			keys = keys.subList(0, n - 1);
 		}
-		return values;
+		return keys;
+	}
+
+	public int getFrequency(Key key) {
+		return frequency.containsKey(key) ? frequency.get(key) : 0;
+	}
+
+	public boolean contains(Key key) {
+		return frequency.containsKey(key);
 	}
 }

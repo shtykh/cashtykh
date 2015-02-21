@@ -1,12 +1,14 @@
 package shtykh.ui;
 
 import org.json.JSONException;
+import shtykh.storage.cache.ICache;
 import shtykh.storage.cache.IMultiLevelCache;
 import shtykh.task.Receiver;
 import shtykh.tweets.Discover;
 import shtykh.tweets.SearchTweets;
 import shtykh.tweets.Tweets;
 import shtykh.tweets.TwitterClient;
+import shtykh.tweets.tag.Tag;
 import shtykh.util.Story;
 
 import javax.swing.*;
@@ -43,7 +45,7 @@ public class CacheTestDialogue<Key, Value extends Serializable> extends JFrame i
 	private boolean isFirstListSelected;
 	private int selectedIndex;
 
-	private IMultiLevelCache cache;
+	private IMultiLevelCache<Key, Value> cache;
 	private TwitterClient twitterClient;
 
 	public CacheTestDialogue(IMultiLevelCache<Key, Value> cache) {
@@ -123,9 +125,9 @@ public class CacheTestDialogue<Key, Value extends Serializable> extends JFrame i
 	}
 
 	private void sync(IMultiLevelCache cache, JList list, JLabel sizeLabel, int level) {
-		DefaultListModel listModel = (DefaultListModel) list.getModel();
+		DefaultListModel<Key> listModel = (DefaultListModel) list.getModel();
 		listModel.clear();
-		Iterator keyIterator = cache.keyIteratorOfLevel(level);
+		Iterator<Key> keyIterator = cache.keyIteratorOfLevel(level);
 		keyIterator.forEachRemaining(obj -> listModel.addElement(obj));
 		sizeLabel.setText(String.valueOf(cache.getSizeOfLevel(level)));
 	}
@@ -153,7 +155,7 @@ public class CacheTestDialogue<Key, Value extends Serializable> extends JFrame i
 		}
 		String query = StringInput.getString();
 		if (null != query) {
-			new SearchTweets(twitterClient, this, query, tweetCountSlider.getValue()).start();
+			new SearchTweets(twitterClient, this, Tag.get(query), tweetCountSlider.getValue()).start();
 		}
 	}
 
@@ -170,7 +172,8 @@ public class CacheTestDialogue<Key, Value extends Serializable> extends JFrame i
 			showError("Your authorization data is broken!", e, this);
 			return;
 		}
-		new Discover(twitterClient, this, cache, 40, tweetCountSlider.getValue(), iterationNumberSlider.getValue()).start();
+		new Discover(twitterClient, this, (ICache<Tag, Story>) cache, 40, tweetCountSlider.getValue(), iterationNumberSlider.getValue()).start();
+		sync();
 	}
 
 	private void onAdd() {
@@ -181,7 +184,8 @@ public class CacheTestDialogue<Key, Value extends Serializable> extends JFrame i
 	private void add(Story newStory) {
 		if (null != newStory) {
 			try {
-				cache.put(newStory.getTitle(), newStory);
+				Key tag = (Key)Tag.get(newStory.getTitle());
+				cache.put(tag, (Value)newStory);
 			} catch (IOException e) {
 				showError("Adding to cache", e, this);
 				return;
