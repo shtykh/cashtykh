@@ -18,7 +18,7 @@ public class SearchTweets extends Task<Tweets> {
 	}
 
 	public SearchTweets(@NotNull TwitterClient client, 
-						@NotNull Receiver<Tweets> receiver, 
+						@NotNull Receiver<Tweets> receiver,
 						Tag query,
 						int twitsCount, 
 						boolean visible) {

@@ -25,7 +25,7 @@ public class Histogram<Key>{
 		List<Key> keys = new ArrayList<>(frequency.keySet());
 		Collections.sort(keys, frequencyComparator);
 		if (keys.size() > n) {
-			keys = keys.subList(0, n - 1);
+			keys = keys.subList(0, n);
 		}
 		return keys;
 	}
@@ -36,5 +36,9 @@ public class Histogram<Key>{
 
 	public boolean contains(Key key) {
 		return frequency.containsKey(key);
+	}
+
+	public List<Key> getAllFrequentLinks() {
+		return getNMostFrequent(frequency.size());
 	}
 }

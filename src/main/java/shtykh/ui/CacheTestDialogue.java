@@ -21,8 +21,12 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Iterator;
+import java.util.List;
 
+import static shtykh.tweets.StoryEngine.getAllFrequentLinks;
 import static shtykh.ui.UiUtil.showError;
 
 public class CacheTestDialogue<Key, Value extends Serializable> extends JFrame implements Receiver<Tweets> {
@@ -31,12 +35,13 @@ public class CacheTestDialogue<Key, Value extends Serializable> extends JFrame i
 	private JButton buttonRemove;
 	private JButton buttonEdit;
     private JButton buttonDiscover;
+	private JButton buttonLoad;
+	private JButton buttonBrowse;
 	private JList list0;
 	private JList list1;
 	private JSpinner spinner0;
 	private JSpinner spinner1;
 	private JCheckBox lastOnTop;
-	private JButton buttonLoad;
 	private JSlider tweetCountSlider;
 	private JSlider iterationNumberSlider;
 	private JLabel size0;
@@ -101,6 +106,7 @@ public class CacheTestDialogue<Key, Value extends Serializable> extends JFrame i
 		buttonEdit.addActionListener(e -> onEdit());
 		buttonRemove.addActionListener(e -> onRemove());
 		buttonDiscover.addActionListener(e -> onDiscover());
+		buttonBrowse.addActionListener(e -> onBrowse());
 	}
 
 	private void initSpinner(JSpinner spinner, int capacity, ChangeListener changeListener) {
@@ -157,6 +163,17 @@ public class CacheTestDialogue<Key, Value extends Serializable> extends JFrame i
 		if (null != query) {
 			new SearchTweets(twitterClient, this, Tag.get(query), tweetCountSlider.getValue()).start();
 		}
+	}
+
+	private void onBrowse() {
+		List<String> links = getAllFrequentLinks();
+		ListDialog.create(links, s ->{
+			try {
+				Desktop.getDesktop().browse(new URI(s));
+			} catch (IOException | URISyntaxException e) {
+				UiUtil.showError("link has failed to open", e, this);
+			}
+		}, "Choose the link to browse it");
 	}
 
 	private void checkTwitterClient() throws JSONException, IOException {

@@ -20,7 +20,7 @@ public class TagContext {
 		if (instance == null) {
 			synchronized (mutex) {
 				if (instance == null) {
-					instance = new TagContext();		
+					instance = new TagContext();
 				}
 			}
 		}

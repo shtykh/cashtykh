@@ -3,7 +3,6 @@ package shtykh.storage.cache.internal;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import shtykh.storage.Storage;
-import shtykh.tweets.tag.IKey;
 
 import java.io.IOException;
 import java.io.Serializable;
