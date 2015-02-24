@@ -2,6 +2,7 @@ package shtykh.util.init;
 
 import shtykh.storage.cache.ICache;
 import shtykh.storage.cache.TwoLevelCache;
+import shtykh.tweets.tag.Text;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -9,7 +10,7 @@ import java.io.Serializable;
 /**
  * Created by shtykh on 16/02/15.
  */
-public class CacheInitializer<Key, Value extends Serializable> {
+public class CacheInitializer<Key extends Text, Value extends Serializable> {
 	private final ICache<Key, Value> cache;
 	private final Factory<Key> keyFactory;
 	private final Factory<Value> valueFactory;

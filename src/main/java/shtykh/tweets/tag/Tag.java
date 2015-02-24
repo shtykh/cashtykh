@@ -3,7 +3,7 @@ package shtykh.tweets.tag;
 /**
  * Created by shtykh on 20/02/15.
  */
-public class Tag {
+public class Tag implements Text {
 	private String text;
 
 	private int frequency;
@@ -34,9 +34,6 @@ public class Tag {
 
 	@Override
 	public String toString() {
-		return text;
-	}
-	public String toFullString() {
 		return text + "(" + TagContext.getFrequency(this) + ")";
 	}
 

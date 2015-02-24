@@ -4,10 +4,7 @@ import org.json.JSONException;
 import shtykh.storage.cache.ICache;
 import shtykh.storage.cache.IMultiLevelCache;
 import shtykh.task.Receiver;
-import shtykh.tweets.Discover;
-import shtykh.tweets.SearchTweets;
-import shtykh.tweets.Tweets;
-import shtykh.tweets.TwitterClient;
+import shtykh.tweets.*;
 import shtykh.tweets.tag.Tag;
 import shtykh.util.Story;
 
@@ -22,12 +19,10 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static shtykh.tweets.StoryEngine.getAllFrequentLinks;
+import static shtykh.tweets.StoryEngine.getAllFrequentURIs;
 import static shtykh.ui.UiUtil.showError;
 
 public class CacheTestDialogue extends JFrame implements Receiver<Tweets> {
@@ -167,14 +162,7 @@ public class CacheTestDialogue extends JFrame implements Receiver<Tweets> {
 	}
 
 	private void onBrowse() {
-		List<URI> uris = new ArrayList<>();
-		for (String link : getAllFrequentLinks()) {
-			try {
-				URI uri = new URI(link);
-				uris.add(uri);
-			} catch (URISyntaxException e) {
-			}
-		}
+		List<URI> uris = getAllFrequentURIs();
 		ListDialog.create(uris, uri ->{
 			try {
 				Desktop.getDesktop().browse(uri);

@@ -6,7 +6,7 @@ import shtykh.storage.cache.internal.IOneLevelCache;
 import shtykh.storage.cache.internal.OneLevelCache;
 import shtykh.storage.internal.MemoryStorage;
 import shtykh.storage.internal.OsStorage;
-import shtykh.tweets.tag.IKey;
+import shtykh.tweets.tag.Text;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -20,7 +20,7 @@ import static com.google.common.base.Objects.firstNonNull;
 /**
  * Created by shtykh on 06/02/15.
  */
-public class TwoLevelCache<Key, Value extends Serializable>
+public class TwoLevelCache<Key extends Text, Value extends Serializable>
 		extends AbstractCache<Key, Value> 
 		implements IMultiLevelCache<Key, Value> {
 

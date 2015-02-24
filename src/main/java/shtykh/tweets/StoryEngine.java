@@ -8,6 +8,9 @@ import shtykh.util.Histogram;
 import shtykh.util.Story;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -38,8 +41,20 @@ public class StoryEngine {
 		return TagContext.getNMostFrequent(queryCount);
 	}
 
-	public static List<String> getNMostFrequentLinks(int n) {
-		return links.getNMostFrequent(n);
+	public static List<URI> getAllFrequentURIs() {
+		return toUris(links.getAllFrequentLinks());
+	}
+
+	private static List<URI> toUris(List<String> links) {
+		List<URI> uris = new ArrayList<>();
+		for (String link : links) {
+			try {
+				URI uri = new URI(link);
+				uris.add(uri);
+			} catch (URISyntaxException ignored) {
+			}
+		}
+		return uris;
 	}
 
 	public static List<String> getAllFrequentLinks() {

@@ -2,6 +2,7 @@ package shtykh.storage.internal;
 
 import org.apache.commons.io.FileUtils;
 import shtykh.storage.Storage;
+import shtykh.tweets.tag.Text;
 import shtykh.util.Serializer;
 
 import java.io.File;
@@ -16,7 +17,7 @@ import java.util.Date;
 /**
  * Created by shtykh on 07/02/15.
  */
-public class OsStorage<Key, Value extends Serializable> implements Storage<Key, Value> {
+public class OsStorage<Key extends Text, Value extends Serializable> implements Storage<Key, Value> {
 	private static String directory = System.getProperty("user.dir") + "/cash_" + (new Date()).toString().replaceAll(":", "_");
 	
 	private void ensureDirectoryExists(){
@@ -26,11 +27,12 @@ public class OsStorage<Key, Value extends Serializable> implements Storage<Key, 
 		}
 	}
 
-	private static <Key> String getFileName(Key key) {
-		if (key.toString().length() == 0) {
-			throw new IllegalArgumentException("key.toString() could not be empty!");
+	private static <Key extends Text> String getFileName(Key key) {
+		String text = key.getText();
+		if (text.length() == 0) {
+			throw new IllegalArgumentException("key.getText() could not be empty!");
 		}
-		return directory + "/" + key;
+		return directory + "/" + text;
 	}
 
 	@Override

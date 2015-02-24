@@ -49,7 +49,7 @@ public class Discover extends Task<Tweets> implements Receiver<Tweets> {
 			List<Tag> hashTags = StoryEngine.getHashTags(storyCache, queryCount);
 			publish("Hashtags found:");
 			for (Tag word : hashTags) {
-				publish(word.toFullString());
+				publish(word.toString());
 			}
 			queryCount = Math.min(hashTags.size(), queryCount);
 			setProgress(PERCENTS_TO_FIND_HASH_TAGS);
