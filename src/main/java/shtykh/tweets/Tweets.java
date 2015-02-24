@@ -3,7 +3,7 @@ package shtykh.tweets;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import shtykh.tweets.tag.Tag;
+import shtykh.tweets.frequent.Tag;
 import shtykh.util.Story;
 
 /**

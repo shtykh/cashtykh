@@ -2,7 +2,7 @@ package shtykh.storage.internal;
 
 import org.apache.commons.io.FileUtils;
 import shtykh.storage.Storage;
-import shtykh.tweets.tag.Text;
+import shtykh.storage.Text;
 import shtykh.util.Serializer;
 
 import java.io.File;

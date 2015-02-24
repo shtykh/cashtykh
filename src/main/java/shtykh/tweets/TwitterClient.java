@@ -10,7 +10,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
-import shtykh.tweets.tag.Tag;
+import shtykh.tweets.frequent.Tag;
 
 import javax.swing.*;
 import java.awt.*;

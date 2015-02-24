@@ -1,7 +1,7 @@
 package shtykh;
 
 import shtykh.storage.cache.IMultiLevelCache;
-import shtykh.tweets.tag.Tag;
+import shtykh.tweets.frequent.Tag;
 import shtykh.ui.CacheTestDialogue;
 import shtykh.ui.UiUtil;
 import shtykh.util.Story;

@@ -1,6 +1,6 @@
 package shtykh.util.init;
 
-import shtykh.tweets.tag.Tag;
+import shtykh.tweets.frequent.Tag;
 import shtykh.util.Story;
 
 import java.io.IOException;

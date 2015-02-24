@@ -1,11 +1,14 @@
 package shtykh.ui;
 
 import org.json.JSONException;
-import shtykh.storage.cache.ICache;
 import shtykh.storage.cache.IMultiLevelCache;
 import shtykh.task.Receiver;
-import shtykh.tweets.*;
-import shtykh.tweets.tag.Tag;
+import shtykh.tweets.Discover;
+import shtykh.tweets.SearchTweets;
+import shtykh.tweets.Tweets;
+import shtykh.tweets.TwitterClient;
+import shtykh.tweets.frequent.Link;
+import shtykh.tweets.frequent.Tag;
 import shtykh.util.Story;
 
 import javax.swing.*;
@@ -18,11 +21,10 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.URI;
 import java.util.Iterator;
 import java.util.List;
 
-import static shtykh.tweets.StoryEngine.getAllFrequentURIs;
+import static shtykh.tweets.frequent.Context.getAllFrequent;
 import static shtykh.ui.UiUtil.showError;
 
 public class CacheTestDialogue extends JFrame implements Receiver<Tweets> {
@@ -162,10 +164,10 @@ public class CacheTestDialogue extends JFrame implements Receiver<Tweets> {
 	}
 
 	private void onBrowse() {
-		List<URI> uris = getAllFrequentURIs();
+		List<Link> uris = getAllFrequent(Link.class);
 		ListDialog.create(uris, uri ->{
 			try {
-				Desktop.getDesktop().browse(uri);
+				Desktop.getDesktop().browse(uri.getURI());
 			} catch (IOException e) {
 				UiUtil.showError("link has failed to open", e, this);
 			}
@@ -185,7 +187,7 @@ public class CacheTestDialogue extends JFrame implements Receiver<Tweets> {
 			showError("Your authorization data is broken!", e, this);
 			return;
 		}
-		new Discover(twitterClient, this, (ICache<Tag, Story>) cache, 40, tweetCountSlider.getValue(), iterationNumberSlider.getValue()).start();
+		new Discover(twitterClient, this, cache, 40, tweetCountSlider.getValue(), iterationNumberSlider.getValue()).start();
 		sync();
 	}
 

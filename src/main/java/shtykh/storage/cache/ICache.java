@@ -1,7 +1,6 @@
 package shtykh.storage.cache;
 
 import shtykh.storage.Storage;
-import shtykh.tweets.tag.IKey;
 
 import java.io.IOException;
 import java.io.Serializable;

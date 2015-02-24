@@ -1,6 +1,6 @@
 //package shtykh.util.init;
 //
-//import shtykh.tweets.tag.IKey;
+//import shtykh.tweets.frequent.IKey;
 //
 //import java.io.IOException;
 //

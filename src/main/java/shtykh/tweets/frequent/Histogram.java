@@ -1,4 +1,4 @@
-package shtykh.util;
+package shtykh.tweets.frequent;
 
 import java.util.*;
 
@@ -38,7 +38,12 @@ public class Histogram<Key>{
 		return frequency.containsKey(key);
 	}
 
-	public List<Key> getAllFrequentLinks() {
+	public List<Key> getAllFrequent() {
 		return getNMostFrequent(frequency.size());
+	}
+
+	@Override
+	public String toString() {
+		return frequency.toString();
 	}
 }

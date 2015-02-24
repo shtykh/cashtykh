@@ -2,7 +2,7 @@ package shtykh.util.init;
 
 import shtykh.storage.cache.ICache;
 import shtykh.storage.cache.TwoLevelCache;
-import shtykh.tweets.tag.Text;
+import shtykh.storage.Text;
 
 import java.io.IOException;
 import java.io.Serializable;

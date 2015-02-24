@@ -6,7 +6,7 @@ import shtykh.storage.cache.internal.IOneLevelCache;
 import shtykh.storage.cache.internal.OneLevelCache;
 import shtykh.storage.internal.MemoryStorage;
 import shtykh.storage.internal.OsStorage;
-import shtykh.tweets.tag.Text;
+import shtykh.storage.Text;
 
 import java.io.IOException;
 import java.io.Serializable;

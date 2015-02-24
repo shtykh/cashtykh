@@ -1,6 +1,6 @@
 package shtykh.util.init;
 
-import shtykh.tweets.tag.Tag;
+import shtykh.tweets.frequent.Tag;
 
 /**
  * Created by shtykh on 20/02/15.

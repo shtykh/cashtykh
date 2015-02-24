@@ -4,7 +4,7 @@ import com.sun.istack.internal.NotNull;
 import shtykh.storage.cache.ICache;
 import shtykh.task.Receiver;
 import shtykh.task.Task;
-import shtykh.tweets.tag.Tag;
+import shtykh.tweets.frequent.Tag;
 import shtykh.util.Story;
 
 import java.util.List;
