@@ -30,7 +30,7 @@ import java.util.List;
 import static shtykh.tweets.StoryEngine.getAllFrequentLinks;
 import static shtykh.ui.UiUtil.showError;
 
-public class CacheTestDialogue<Key, Value extends Serializable> extends JFrame implements Receiver<Tweets> {
+public class CacheTestDialogue extends JFrame implements Receiver<Tweets> {
     private JPanel contentPane;
     private JButton buttonAdd;
 	private JButton buttonRemove;
@@ -51,10 +51,10 @@ public class CacheTestDialogue<Key, Value extends Serializable> extends JFrame i
 	private boolean isFirstListSelected;
 	private int selectedIndex;
 
-	private IMultiLevelCache<Key, Value> cache;
+	private IMultiLevelCache<Tag, Story> cache;
 	private TwitterClient twitterClient;
 
-	public CacheTestDialogue(IMultiLevelCache<Key, Value> cache) {
+	public CacheTestDialogue(IMultiLevelCache<Tag, Story> cache) {
 		this.cache = cache;
 		setContentPane(contentPane);
 
@@ -93,8 +93,8 @@ public class CacheTestDialogue<Key, Value extends Serializable> extends JFrame i
 		}
 	}
 
-	public static <Key, Value extends Serializable> void show(IMultiLevelCache<Key, Value> cache) {
-		CacheTestDialogue dialog = new CacheTestDialogue<>(cache);
+	public static void show(IMultiLevelCache<Tag, Story> cache) {
+		CacheTestDialogue dialog = new CacheTestDialogue(cache);
 		dialog.pack();
 		dialog.setVisible(true);
 	}
@@ -123,7 +123,7 @@ public class CacheTestDialogue<Key, Value extends Serializable> extends JFrame i
 		jList.setCellRenderer(new MyListCellRenderer(capacitySpinner));
 		jList.addListSelectionListener(e -> onSelectionChanged(jList == list0, jList));
 		jList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		jList.setModel(new DefaultListModel<Key>());
+		jList.setModel(new DefaultListModel<Tag>());
 	}
 
 	private void sync() {
@@ -131,10 +131,10 @@ public class CacheTestDialogue<Key, Value extends Serializable> extends JFrame i
 		sync(cache, list1, size1, 1);
 	}
 
-	private void sync(IMultiLevelCache cache, JList list, JLabel sizeLabel, int level) {
-		DefaultListModel<Key> listModel = (DefaultListModel) list.getModel();
+	private void sync(IMultiLevelCache<Tag, Story> cache, JList<Tag> list, JLabel sizeLabel, int level) {
+		DefaultListModel<Tag> listModel = (DefaultListModel) list.getModel();
 		listModel.clear();
-		Iterator<Key> keyIterator = cache.keyIteratorOfLevel(level);
+		Iterator<Tag> keyIterator = cache.keyIteratorOfLevel(level);
 		keyIterator.forEachRemaining(obj -> listModel.addElement(obj));
 		sizeLabel.setText(String.valueOf(cache.getSizeOfLevel(level)));
 	}
@@ -173,7 +173,6 @@ public class CacheTestDialogue<Key, Value extends Serializable> extends JFrame i
 				URI uri = new URI(link);
 				uris.add(uri);
 			} catch (URISyntaxException e) {
-				continue;
 			}
 		}
 		ListDialog.create(uris, uri ->{
@@ -210,8 +209,8 @@ public class CacheTestDialogue<Key, Value extends Serializable> extends JFrame i
 	private void add(Story newStory) {
 		if (null != newStory) {
 			try {
-				Key tag = (Key)Tag.get(newStory.getTitle());
-				cache.put(tag, (Value)newStory);
+				Tag tag = Tag.get(newStory.getTitle());
+				cache.put(tag, newStory);
 			} catch (IOException e) {
 				showError("Adding to cache", e, this);
 				return;
@@ -245,9 +244,9 @@ public class CacheTestDialogue<Key, Value extends Serializable> extends JFrame i
 		add(storyEdited);
 	}
 
-	private Key getSelectedKey() {
+	private Tag getSelectedKey() {
 		JList list = isFirstListSelected ? list0 : list1;
-		ListModel<Key> listModel = list.getModel();
+		ListModel<Tag> listModel = list.getModel();
 		return selectedIndex >= 0 ? listModel.getElementAt(selectedIndex) : null;
 	}
 
