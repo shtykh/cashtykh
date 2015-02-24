@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -166,11 +167,19 @@ public class CacheTestDialogue<Key, Value extends Serializable> extends JFrame i
 	}
 
 	private void onBrowse() {
-		List<String> links = getAllFrequentLinks();
-		ListDialog.create(links, s ->{
+		List<URI> uris = new ArrayList<>();
+		for (String link : getAllFrequentLinks()) {
 			try {
-				Desktop.getDesktop().browse(new URI(s));
-			} catch (IOException | URISyntaxException e) {
+				URI uri = new URI(link);
+				uris.add(uri);
+			} catch (URISyntaxException e) {
+				continue;
+			}
+		}
+		ListDialog.create(uris, uri ->{
+			try {
+				Desktop.getDesktop().browse(uri);
+			} catch (IOException e) {
 				UiUtil.showError("link has failed to open", e, this);
 			}
 		}, "Choose the link to browse it");
