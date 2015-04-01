@@ -1,6 +1,6 @@
 package shtykh.tweets;
 
-import com.sun.istack.internal.NotNull;
+
 import shtykh.storage.cache.ICache;
 import shtykh.task.Receiver;
 import shtykh.task.Task;
@@ -24,9 +24,9 @@ public class Discover extends Task<Tweets> implements Receiver<Tweets> {
 	private final int iterations;
 	private AtomicInteger jobsDoneCount = new AtomicInteger(0);
 
-	public Discover(@NotNull TwitterClient client,
+	public Discover(TwitterClient client,
 					Receiver<Tweets> receiver,
-					@NotNull ICache<Tag, Story> storyCache,
+					ICache<Tag, Story> storyCache,
 					int queryCount,
 					int twitsInQuery, 
 					int iterations) {

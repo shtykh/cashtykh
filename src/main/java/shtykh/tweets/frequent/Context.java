@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Context<C> {
 	private static Object mutex = new Object();
 	private static Map<Class, Context> instances;
+
 	private final Histogram<C> histogram;
 
 	private Context() {

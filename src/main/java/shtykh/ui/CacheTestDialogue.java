@@ -44,6 +44,7 @@ public class CacheTestDialogue extends JFrame implements Receiver<Tweets> {
 	private JSlider iterationNumberSlider;
 	private JLabel size0;
 	private JLabel size1;
+	private JButton buttonPost;
 
 	private boolean isFirstListSelected;
 	private int selectedIndex;
@@ -105,6 +106,7 @@ public class CacheTestDialogue extends JFrame implements Receiver<Tweets> {
 		buttonRemove.addActionListener(e -> onRemove());
 		buttonDiscover.addActionListener(e -> onDiscover());
 		buttonBrowse.addActionListener(e -> onBrowse());
+		buttonPost.addActionListener(e -> onPost());
 	}
 
 	private void initSpinner(JSpinner spinner, int capacity, ChangeListener changeListener) {
@@ -163,6 +165,27 @@ public class CacheTestDialogue extends JFrame implements Receiver<Tweets> {
 		}
 	}
 
+	private void onPost() {
+		try {
+			checkTwitterClient();
+		} catch (Exception e) {
+			showError("Your authorization data is broken!", e, this);
+			return;
+		}
+		Tag selectedKey = getSelectedKey();
+		Story story = null;
+		try {
+			story = cache.get(selectedKey);
+		} catch (IOException e) {
+			showError("Error while getting from cache", e, this);
+		}
+		try {
+			twitterClient.post(story);
+		} catch (Exception e) {
+			showError("Error while posting", e, this);
+		}
+	}
+
 	private void onBrowse() {
 		List<Link> uris = getAllFrequent(Link.class);
 		ListDialog.create(uris, uri ->{
@@ -210,9 +233,6 @@ public class CacheTestDialogue extends JFrame implements Receiver<Tweets> {
 	}
 
 	private void onRemove() {
-		if (selectedIndex < 0) {
-			return;
-		}
 		try {
 			cache.remove(getSelectedKey());
 		} catch (IOException e) {

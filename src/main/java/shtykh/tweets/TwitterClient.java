@@ -4,24 +4,29 @@ import oauth.signpost.OAuthConsumer;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
 import oauth.signpost.exception.OAuthException;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 import shtykh.tweets.frequent.Tag;
+import shtykh.util.Story;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.net.URL;
+import java.util.List;
 
 public class TwitterClient {
+	private static Logger log = Logger.getLogger(TwitterClient.class);
 
 	private OAuthConsumer consumer;
+	private HttpClient client;
 
 	public TwitterClient(Component parent) throws JSONException, IOException {
 		String authData;
@@ -35,6 +40,7 @@ public class TwitterClient {
 			authData = readFileAsString(filePath);
 		}
 		initConsumer(authData);
+		client = new DefaultHttpClient();
 	}
 
 	private String getFileFromUser(Component parent) {
@@ -73,13 +79,84 @@ public class TwitterClient {
 		consumer.setTokenWithSecret(accessToken, accessSecret);
 	}
 
-	public Tweets searchTweets(Tag query, int count) throws OAuthException, IOException, JSONException, TwitterAPIException {
+	public Tweets searchTweets(Tag query, int count) 
+			throws OAuthException, 
+				IOException, 
+				JSONException, 
+				TwitterAPIException {
 		String cleanedQuery = query.getText().replace("#", "%23");
-		HttpGet request = new HttpGet("https://api.twitter.com/1.1/search/tweets.json?q=" + cleanedQuery + "&count=" + count);
+		HttpGet request = new HttpGet("https://api.twitter.com/1.1/search/tweets.json?q=" 
+				+ cleanedQuery + 
+				"&count=" + count);
 		consumer.sign(request);
-
-		HttpClient client = new DefaultHttpClient();
 		HttpResponse response = client.execute(request);
 		return new Tweets(query, IOUtils.toString(response.getEntity().getContent()));
 	}
+	
+	public String post(Story tweet) throws TwitterAPIException {
+		return post(tweet.getStory());
+	}
+
+	public synchronized String post(String tweet) throws TwitterAPIException {
+		String tweetString = removeSpaces(tweet);
+		HttpPost request = new HttpPost("https://api.twitter.com/1.1/statuses/update.json?status="
+				+ tweetString);
+		String result;
+		try {
+			consumer.sign(request);
+			HttpResponse response = client.execute(request);
+			HttpEntity entity = response.getEntity();
+			result = IOUtils.toString(entity.getContent());
+		} catch (Exception e) {
+			throw new TwitterAPIException(e);
+		}
+		log.info("Tweeting:");
+		log.info(tweet);
+		return result;
+	}
+
+	private Location whereIs(double _lat, double _long) throws TwitterAPIException, JSONException {
+		HttpGet request = new HttpGet("https://api.twitter.com/1.1/geo/reverse_geocode.json?lat="
+				+ _lat + "&long=" + _long);
+		String entityString;
+		try {
+			consumer.sign(request);
+			HttpResponse response = client.execute(request);
+			HttpEntity entity = response.getEntity();
+			entityString = IOUtils.toString(entity.getContent());
+		} catch (Exception e) {
+			throw new TwitterAPIException(e);
+		}
+		List<Location> locations = Location.readPlaces(entityString);
+		return locations.get(0);
+	}
+
+	private String findMyIp() throws IOException {
+		URL whatismyip = new URL("http://checkip.amazonaws.com");
+		BufferedReader in = new BufferedReader(new InputStreamReader(
+				whatismyip.openStream()));
+
+		String ip = in.readLine();
+		return ip;
+	}
+
+	public Location getLocation()
+			throws JSONException,
+			TwitterAPIException, 
+			IOException {
+		String myIp = findMyIp();
+		HttpGet request = new HttpGet("http://freegeoip.net/json/" + myIp);
+		HttpResponse response = client.execute(request);
+		HttpEntity entity = response.getEntity();
+		String string = IOUtils.toString(entity.getContent());
+		double[] coordinates = Location.readCoordinates(string);
+		return whereIs(coordinates[0], coordinates[1]);
+	}
+
+	private String removeSpaces(String story) {
+		String replace = story.replace(" ", "%20");
+		replace = replace.replace("#", "%23");
+		return replace;
+	}
+	
 }

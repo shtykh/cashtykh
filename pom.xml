@@ -6,7 +6,7 @@
 
     <groupId>shtykh</groupId>
     <artifactId>cashtykh</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
     <dependencies>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -41,16 +41,17 @@
         <dependency>
             <groupId>signpost-commonshttp4-1.2.1.2</groupId>
             <artifactId>signpost-commonshttp4-1.2.1.2</artifactId>
-            <scope>system</scope>
             <version>1.2.1.2</version>
-            <systemPath>${basedir}/src/main/libs/signpost-commonshttp4-1.2.1.2.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>signpost-core-1.2.1.2</groupId>
             <artifactId>signpost-core-1.2.1.2</artifactId>
-            <scope>system</scope>
             <version>1.2.1.2</version>
-            <systemPath>${basedir}/src/main/libs/signpost-core-1.2.1.2.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
         </dependency>
     </dependencies>
 
@@ -61,7 +62,8 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>shtykh.Main</mainClass>
+                            <!--<mainClass>shtykh.Main</mainClass>-->
+                            <mainClass>shtykh.tweets.bot.Bot</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

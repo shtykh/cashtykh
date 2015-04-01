@@ -7,4 +7,7 @@ public class TwitterAPIException extends Exception {
 	public TwitterAPIException(String message) {
 		super(message);
 	}
+	public TwitterAPIException(Exception cause) {
+		super(cause);
+	}
 }

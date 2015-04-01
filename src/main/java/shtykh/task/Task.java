@@ -1,5 +1,4 @@
 package shtykh.task;
-import com.sun.istack.internal.NotNull;
 import shtykh.ui.UiUtil;
 
 import javax.swing.*;
@@ -18,7 +17,7 @@ public abstract class Task<Result> extends SwingWorker<Result, String> {
 		this(receiver, true, true);
 	}
 
-	public Task(@NotNull Receiver<Result> receiver, boolean disposeWhenDone, boolean visible){
+	public Task(Receiver<Result> receiver, boolean disposeWhenDone, boolean visible){
 		this.receiver = receiver;
 		this.disposeWhenDone = disposeWhenDone;
 		taskFrame = new TaskFrame(this, visible);
