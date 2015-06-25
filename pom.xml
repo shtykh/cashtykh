@@ -7,6 +7,7 @@
     <groupId>shtykh</groupId>
     <artifactId>cashtykh</artifactId>
     <version>1.1</version>
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -62,8 +63,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <!--<mainClass>shtykh.Main</mainClass>-->
-                            <mainClass>shtykh.tweets.bot.Bot</mainClass>
+                            <mainClass>shtykh.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

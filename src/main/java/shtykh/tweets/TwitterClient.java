@@ -27,11 +27,13 @@ public class TwitterClient {
 
 	private OAuthConsumer consumer;
 	private HttpClient client;
+	private String weatherKey;
 
 	public TwitterClient(Component parent) throws JSONException, IOException {
 		String authData;
 		try {
-			authData = readFileAsString(System.getProperty("user.dir") + "/auth");
+			String path = System.getProperty("user.home") + "/auth";
+			authData = readFileAsString(path);
 		} catch (IOException e) {
 			String filePath = null;
 			while (filePath == null) {
@@ -46,7 +48,7 @@ public class TwitterClient {
 	private String getFileFromUser(Component parent) {
 		String auth = null;
 		JFileChooser fileChooser = new JFileChooser();
-		fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
+		fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
 		int result = fileChooser.showOpenDialog(parent);
 		if (result == JFileChooser.APPROVE_OPTION) {
 			File selectedFile = fileChooser.getSelectedFile();
@@ -77,6 +79,7 @@ public class TwitterClient {
 		String accessToken = authJson.getString("accessToken");
 		String accessSecret = authJson.getString("accessSecret");
 		consumer.setTokenWithSecret(accessToken, accessSecret);
+		this.weatherKey = authJson.getString("weatherKey");
 	}
 
 	public Tweets searchTweets(Tag query, int count) 
@@ -153,10 +156,56 @@ public class TwitterClient {
 		return whereIs(coordinates[0], coordinates[1]);
 	}
 
-	private String removeSpaces(String story) {
-		String replace = story.replace(" ", "%20");
-		replace = replace.replace("#", "%23");
-		return replace;
+	public Weather getWeather(String query)
+			throws JSONException,
+					IOException, 
+					TwitterAPIException {
+		HttpGet request = new HttpGet("http://api.worldweatheronline.com/free/v2/weather.ashx" +
+				"?key=" + weatherKey +
+				"&q=" + query +
+				"&num_of_days=1" +
+				"&format=json");
+		HttpResponse response = client.execute(request);
+		HttpEntity entity = response.getEntity();
+		String string = IOUtils.toString(entity.getContent());
+		System.out.println(string);
+		return Weather.readData(string);
+	}
+	
+	public static String removeSpaces(String rawString) {
+		String result = rawString.replace("%", "%25");
+		for (String[] strings : new String[][]{
+				{"!", "%21"},
+				{"\"", "%22"},
+				{"#", "%23"},
+				{"&", "%26"},
+				{"'", "%27"},
+				{"(", "%28"},
+				{")", "%29"},
+				{"*", "%2a"},
+				{",", "%2c"},
+				{"-", "%2d"},
+				{".", "%2e"},
+				{"/", "%2f"},
+				{":", "%3a"},
+				{";", "%3b"},
+				{"<", "%3c"},
+				{"=", "%3d"},
+				{">", "%3e"},
+				{"?", "%3f"},
+				{"[", "%5b"},
+				{"]", "%5d"},
+				{"^", "%5e"},
+				{"_", "%5f"},
+				{"`", "%60"},
+				{"{", "%7b"},
+				{"|", "%7c"},
+				{"}", "%7d"},
+				{" ", "%20"},
+		}) {
+			result = result.replace(strings[0], strings[1]);
+		}
+		return result;
 	}
 	
 }
